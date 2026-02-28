@@ -1,3 +1,34 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Partes teoricas del proyecto.md
+Tipo        : Guía teórica-metodológica (meta-documento)
+Descripción : Documento de referencia que describe QUÉ debe
+              contener cada sección de una investigación
+              académica del tipo aplicada-tecnológica,
+              cuantitativa, correlacional-experimental y de
+              diseño mixto. No contiene datos del proyecto en
+              sí, sino la teoría sobre cómo redactar cada
+              apartado (portada, resumen, marco teórico,
+              metodología, resultados, etc.).
+Autor       : Generado por IA como material de apoyo
+Creado      : 2026-02-28
+Últ. mod.   : 2026-02-28
+Etapa       : Taller de Investigación 1 – Fundamentación teórica
+Estado      : VIGENTE – Documento de consulta permanente
+Notas       : Este archivo NO contiene contenido del proyecto;
+              es una guía estructural. No mezclar sus
+              instrucciones genéricas con los datos específicos
+              del prototipo ESP32.
+===================================================================
+-->
+
 # Partes Teóricas del Proyecto de Investigación
 
 <a name="inicio"></a>

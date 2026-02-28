@@ -1,3 +1,38 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Documentos de la IA/Analisis de Riesgos
+              y Limitaciones Tecnicas.md
+Tipo        : Análisis técnico – Riesgos y limitaciones de diseño
+Descripción : Identificación detallada de restricciones técnicas
+              del hardware: no-linealidad del ADC del ESP32,
+              conflicto WiFi/ADC2, efecto jaula de Faraday en
+              tableros metálicos, limitación a servicio
+              monofásico (127 V), zona muerta en cargas <0.2 A,
+              y estrategia de respaldo con microSD. Define las
+              delimitaciones técnicas que acotaron el alcance
+              del proyecto.
+Autor       : Generado por IA
+Creado      : 2026-02-25
+Últ. mod.   : 2026-02-28 (reorganización a carpeta Documentos
+              de la IA)
+Etapa       : Taller de Investigación 1 – Análisis de viabilidad
+Estado      : INTEGRADO – Contenido absorbido por la sección 8
+              de "Proyecto completo.md"
+Notas       : Las delimitaciones aquí definidas (monofásico,
+              >0.2 A, WiFi 2.4 GHz, intervención menor para
+              toma L/N) fueron adoptadas textualmente en el
+              documento compilado. Consultar este archivo solo
+              como referencia de detalle expandido.
+===================================================================
+-->
+
 # Análisis de Riesgos y Limitaciones Técnicas
 
 Este documento detalla los desafíos técnicos y las limitaciones físicas inherentes al diseño actual del monitor de energía. Considerar estos aspectos es crucial para definir correctamente el alcance del proyecto y evitar problemas durante la fase de implementación.

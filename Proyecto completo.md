@@ -1,3 +1,37 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : Proyecto completo.md
+Tipo        : Documento compilado – Investigación completa
+Descripción : Versión unificada y formal del trabajo de
+              investigación. Integra resumen, introducción,
+              marco teórico, marco metodológico, diseño del
+              sistema, análisis de riesgos, resultados
+              preliminares, conclusiones y referencias.
+              Este archivo es la fuente de verdad vigente;
+              cualquier dato de archivos anteriores que
+              contradiga lo aquí escrito debe considerarse
+              superado.
+Autor       : Generado por IA, revisado y aprobado por el
+              investigador
+Creado      : 2026-02-28
+Últ. mod.   : 2026-02-28
+Etapa       : Taller de Investigación 1 – Compilación final
+Estado      : VIGENTE – Documento maestro activo
+Dependencias: Consolida contenido de todos los archivos en
+              TALLER 1/Documentos de la IA/ y TALLER 1/
+Notas       : Los conceptos de costo (~$550 MXN) de documentos
+              anteriores fueron actualizados aquí a ~$600 MXN.
+              Prevalece siempre la cifra de este documento.
+===================================================================
+-->
+
 <a name="inicio"></a>
 
 # Diseño e Implementación de un Sistema IoT de Bajo Costo para la Monitorización No Intrusiva de Consumo Eléctrico Residencial mediante Arquitectura ESP32

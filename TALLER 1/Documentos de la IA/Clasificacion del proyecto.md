@@ -1,3 +1,37 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Documentos de la IA/Clasificacion del
+              proyecto.md
+Tipo        : Clasificación metodológica de la investigación
+Descripción : Define la tipología formal del proyecto según
+              estándares académicos: investigación aplicada y
+              tecnológica, enfoque cuantitativo, alcance
+              correlacional-experimental, diseño mixto
+              (laboratorio + campo). Incluye justificación
+              de cada clasificación con ejemplos concretos
+              del prototipo ESP32.
+Autor       : Generado por IA
+Creado      : 2026-02-25
+Últ. mod.   : 2026-02-28 (reorganización a carpeta Documentos
+              de la IA)
+Etapa       : Taller de Investigación 1 – Diseño metodológico
+Estado      : INTEGRADO – La clasificación fue adoptada en el
+              Marco Metodológico de "Proyecto completo.md"
+              (sección 6)
+Notas       : La redacción del párrafo-resumen final de este
+              archivo fue usada casi textualmente en el
+              documento compilado. La terminología aquí
+              establecida es la definitiva.
+===================================================================
+-->
+
 Para la redacción formal de la metodología en tu tesis o reporte técnico, el proyecto debe ser clasificado bajo los estándares de investigación en ingeniería. Considerando que se trata del desarrollo de un dispositivo físico (hardware) con validación de desempeño, la clasificación pertinente y su justificación son las siguientes:
 
 ### Clasificación Metodológica del Proyecto

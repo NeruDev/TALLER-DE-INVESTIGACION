@@ -1,3 +1,42 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Documentos de la IA/Investigacion del
+              problema.md
+Tipo        : Investigación técnica del problema – Documento
+              exploratorio
+Descripción : Primera exploración técnica generada por IA que
+              describe el sistema completo: resumen ejecutivo,
+              planteamiento, objetivos, descripción de hardware
+              (ESP32, SCT-013-030, ZMPT101B, fuente SMPS),
+              fundamentación matemática (I_RMS, Potencia Activa),
+              análisis de costos BOM (~$600 MXN) y fases de
+              implementación. Sirvió como borrador base para
+              las secciones técnicas del documento final.
+Autor       : Generado por IA
+Creado      : 2026-02-25
+Últ. mod.   : 2026-02-28 (reorganización a carpeta Documentos
+              de la IA)
+Etapa       : Taller de Investigación 1 – Exploración técnica
+              inicial
+Estado      : INTEGRADO – Contenido refinado e incorporado en
+              secciones 4, 7 y Anexo de costos de
+              "Proyecto completo.md"
+Notas       : El BOM y las ecuaciones de este archivo fueron
+              la base del documento final. Algunas
+              simplificaciones aquí presentes (ej. uso de
+              EmonLib) pueden haber sido reemplazadas por
+              implementaciones propias en versiones
+              posteriores del firmware.
+===================================================================
+-->
+
 Sistema de Monitoreo de Consumo Eléctrico Residencial Basado en IoT (SME-IoT)
 
 ## 1. Resumen Ejecutivo

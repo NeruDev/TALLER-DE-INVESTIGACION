@@ -1,3 +1,40 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Documentos de la IA/Definición del
+              proyecto y Planteamiento del problema.md
+Tipo        : Definición del proyecto y planteamiento del problema
+Descripción : Expansión formal de las ideas iniciales del autor
+              ("Version humana.md"): justificación del proyecto,
+              formulación del problema específico, análisis
+              causal (5 causas identificadas), efectos,
+              condiciones de ocurrencia, probabilidad de
+              solución y relación con Smart Grids y domótica.
+              Incluye la pregunta de investigación formal.
+Autor       : Generado por IA a partir de las respuestas del
+              investigador en "Version humana.md"
+Creado      : 2026-02-25
+Últ. mod.   : 2026-02-28 (reorganización a carpeta Documentos
+              de la IA)
+Etapa       : Taller de Investigación 1 – Estructuración del
+              problema
+Estado      : INTEGRADO – Contenido absorbido por las secciones
+              2.1-2.4 de "Proyecto completo.md"
+Notas       : El costo estimado aquí era ~$550 MXN; fue
+              actualizado a ~$600 MXN en el documento final
+              tras revisión del BOM. Usar siempre la cifra
+              del documento compilado. La pregunta de
+              investigación fue simplificada en la versión
+              final.
+===================================================================
+-->
+
 # Definición del Proyecto y Planteamiento del Problema
 
 ## 1. Definición del Proyecto

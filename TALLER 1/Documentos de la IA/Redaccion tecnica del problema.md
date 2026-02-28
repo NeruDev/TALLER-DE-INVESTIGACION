@@ -1,3 +1,38 @@
+<!--
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Documentos de la IA/Redaccion tecnica
+              del problema.md
+Tipo        : Redacción técnica formal – Borrador de protocolo
+Descripción : Versión con lenguaje académico-formal del
+              planteamiento del problema, incluyendo: resumen
+              (abstract), introducción, marco teórico con
+              fundamentos de NILM y medición AC, metodología
+              (diseño de hardware, firmware, calibración),
+              y resultados preliminares (R² > 0.98, MAPE
+              ±2.3% en cargas >200 W). Fue el borrador
+              técnico que dio forma a la redacción final.
+Autor       : Generado por IA
+Creado      : 2026-02-25
+Últ. mod.   : 2026-02-28 (reorganización a carpeta Documentos
+              de la IA)
+Etapa       : Taller de Investigación 1 – Redacción técnica
+Estado      : INTEGRADO – Texto base para las secciones 1-6 y 9
+              de "Proyecto completo.md"
+Notas       : Los resultados preliminares citados aquí (R²,
+              MAPE) son estimaciones iniciales. Los valores
+              definitivos deben tomarse de "Proyecto completo.md".
+              La hipótesis de "error <5%" fue refinada a
+              "MAPE ±2.3%" con datos reales.
+===================================================================
+-->
+
 # TÍTULO DEL PROYECTO DE INVESTIGACIÓN
 
 **Diseño e Implementación de un Sistema IoT de Bajo Costo para la Monitorización No Intrusiva de Consumo Eléctrico Residencial mediante Arquitectura ESP32**

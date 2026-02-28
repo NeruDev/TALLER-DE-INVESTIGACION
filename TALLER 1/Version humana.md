@@ -1,5 +1,35 @@
 <!--
-CONTEXTO: Este archivo contiene las respuestas originales a las preguntas planteadas, respondidas sin ayuda externa ni investigación profunda previa. Representa el punto de partida intuitivo del autor.
+===================================================================
+METADATOS DEL DOCUMENTO
+===================================================================
+Proyecto    : Diseño e Implementación de un Sistema IoT de Bajo
+              Costo para la Monitorización No Intrusiva de Consumo
+              Eléctrico Residencial mediante Arquitectura ESP32
+Área        : Ingeniería Electrónica / Investigación Académica
+-------------------------------------------------------------------
+Archivo     : TALLER 1/Version humana.md
+Tipo        : Borrador original del autor (perspectiva humana)
+Descripción : Respuestas iniciales e intuitivas del investigador
+              a las preguntas fundamentales del proyecto
+              (problema, objetivos, delimitaciones), redactadas
+              SIN asistencia de IA ni investigación bibliográfica
+              previa. Representa el punto de partida conceptual
+              y la visión personal del autor antes de cualquier
+              refinamiento técnico.
+Autor       : Investigador (humano) – sin asistencia externa
+Creado      : 2026-02-25
+Últ. mod.   : 2026-02-25
+Etapa       : Taller de Investigación 1 – Ideación inicial
+Estado      : SUPERADO – Conservado como referencia histórica
+Notas       : Algunos planteamientos aquí han sido refinados o
+              descartados en versiones posteriores. Ejemplo:
+              el objetivo de "diseñar una estrategia de
+              mercadotecnia" fue eliminado por quedar fuera
+              del alcance académico. Las delimitaciones fueron
+              expandidas significativamente en documentos
+              posteriores. NO usar este archivo como fuente de
+              datos técnicos actuales.
+===================================================================
 -->
 
 Planteamiento del problema
