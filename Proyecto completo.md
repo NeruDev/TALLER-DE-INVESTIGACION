@@ -111,7 +111,7 @@ La gestión de la demanda energética constituye un pilar fundamental en la tran
 
 En el contexto mexicano, el esquema tarifario doméstico administrado por la Comisión Federal de Electricidad (CFE) estructura el costo de la energía eléctrica residencial en categorías escalonadas (tarifas 1, 1A, 1B, 1C, 1D, 1E y 1F), siendo la tarifa DAC (Doméstica de Alto Consumo) la que mayor impacto económico representa para el usuario, dado que elimina el subsidio gubernamental y aplica el costo real por kilowatt-hora (CFE, 2024). Sin embargo, los medidores electromecánicos o digitales estándar instalados por la empresa suministradora funcionan como dispositivos de registro acumulativo sin capacidad de retroalimentación instantánea, entregando datos agregados de forma mensual o bimestral. Esta condición elimina la posibilidad de que el usuario final corrija sus hábitos de consumo en tiempo real.
 
-La evolución del Internet de las Cosas (IoT) y la disponibilidad comercial de microcontroladores de bajo costo con conectividad inalámbrica integrada —como el ESP32 de Espressif Systems— han abierto una ventana de oportunidad para el desarrollo de soluciones de medición inteligente accesibles para el mercado residencial. Paralelamente, la madurez de los sensores de corriente de núcleo partido (tipo *clamp*), basados en el principio de inducción electromagnética, permite la implementación de sistemas de monitoreo no intrusivo de carga (NILM, *Non-Intrusive Load Monitoring*) que no requieren la intervención física del cableado eléctrico existente (Alkar y Buhur, 2005).
+La evolución del Internet de las Cosas (IoT) y la disponibilidad comercial de microcontroladores de bajo costo con conectividad inalámbrica integrada —como el ESP32 de Espressif Systems— han abierto una ventana de oportunidad para el desarrollo de soluciones de medición inteligente accesibles para el mercado residencial. Paralelamente, la madurez de los sensores de corriente de núcleo partido (tipo *clamp*), basados en el principio de inducción electromagnética, permite la implementación de sistemas de monitoreo no intrusivo de carga (NILM, *Non-Intrusive Load Monitoring*) que no requieren la intervención física del cableado eléctrico existente (Kaselimi et al., 2022).
 
 En este escenario convergen la necesidad social de transparencia en el consumo energético, la viabilidad tecnológica de las plataformas IoT de bajo costo y la urgencia ambiental de reducir la huella de carbono del sector residencial, configurando el espacio de investigación que da origen al presente proyecto.
 
@@ -275,9 +275,9 @@ $H_0$: El sistema propuesto no alcanza la precisión requerida (error porcentual
 
 El desarrollo de sistemas de monitoreo eléctrico residencial basados en microcontroladores y plataformas IoT ha sido objeto de investigación creciente durante la última década. A continuación se revisan los antecedentes más relevantes para el presente proyecto.
 
-Alkar y Buhur (2005) propusieron uno de los primeros sistemas de automatización doméstica basados en Internet, demostrando la viabilidad de utilizar infraestructura de red TCP/IP para el control remoto de dispositivos multifuncionales en el hogar. Aunque la investigación no se centró en medición de energía, estableció las bases arquitectónicas para los sistemas IoT domésticos que serían desarrollados en la década siguiente. La principal limitación de este trabajo, desde la perspectiva del presente proyecto, es la ausencia de sensores de medición eléctrica y la dependencia de hardware propietario de alto costo.
+Kaselimi et al. (2022) presentaron una revisión exhaustiva de los métodos, desafíos y perspectivas del monitoreo no intrusivo de carga (NILM), trazando la evolución desde las firmas de potencia originales hasta las arquitecturas modernas basadas en aprendizaje profundo e IoT. Los autores identifican como brechas pendientes la confiabilidad en escenarios reales, la generalización entre hogares y la limitada disponibilidad de conjuntos de datos abiertos. Desde la perspectiva del presente proyecto, esta revisión fundamenta la elección del enfoque no intrusivo como paradigma de monitoreo y confirma la vigencia de la medición en un solo punto de la acometida.
 
-Liu et al. (2021) presentaron el diseño de un sistema de gestión energética para el hogar inteligente basado en el microcontrolador ESP32, validando la capacidad de esta plataforma para gestionar simultáneamente la adquisición de datos de sensores y la comunicación inalámbrica. Los autores reportaron resultados satisfactorios en la transmisión de datos en tiempo real; sin embargo, el estudio no incorporó la medición de voltaje real de la red, limitándose a estimaciones de potencia aparente basadas en voltaje nominal constante. Esta brecha es precisamente la que el presente proyecto busca cubrir mediante la integración del sensor de voltaje ZMPT101B.
+Ramadan et al. (2024) propusieron un sistema de gestión energética para microrredes residenciales que integra técnicas NILM con infraestructura IoT, logrando la desagregación de cargas individuales a partir de la medición agregada en el punto de acometida. Los autores validaron la viabilidad de combinar algoritmos de predicción de consumo con plataformas conectadas para la gestión de demanda en tiempo real. Sin embargo, su implementación se orientó a microrredes con generación distribuida y hardware de gama industrial, sin abordar la restricción de costo que caracteriza el mercado residencial mexicano. Esta brecha es precisamente la que el presente proyecto busca cubrir mediante la arquitectura de bajo costo basada en ESP32 y sensores genéricos.
 
 El proyecto de código abierto OpenEnergyMonitor —desarrollado principalmente por Trystan Lea y Glyn Hudson desde 2012— constituye el antecedente más significativo en el ámbito del hardware libre para monitoreo de energía. Su plataforma emonTx, basada en el microcontrolador ATmega328P (Arduino), implementó la medición no intrusiva mediante sensores SCT-013 y la biblioteca de cálculos energéticos `EmonLib`. No obstante, el costo de importación de sus módulos ($> 2,000$ MXN para el kit básico) y la ausencia de conectividad WiFi nativa (requiere módulos adicionales) limitan su accesibilidad en el mercado mexicano. El presente proyecto adopta la fundamentación matemática de `EmonLib` pero la migra a la plataforma ESP32, que integra WiFi de manera nativa y presenta un costo significativamente inferior.
 
@@ -941,9 +941,7 @@ Las siguientes líneas de desarrollo permanecen abiertas para las fases subsecue
 
 <a name="11-referencias-bibliográficas"></a>
 
-Alkar, A. Z., & Buhur, U. (2005). An Internet based wireless home automation system for multifunctional devices. *IEEE Transactions on Consumer Electronics*, *51*(4), 1169–1174. https://doi.org/10.1109/TCE.2005.1561840
-
-American Psychological Association. (2020). *Publication manual of the American Psychological Association* (7th ed.). American Psychological Association. https://doi.org/10.1037/0000165-000
+American Psychological Association. (2020). *Publication manual of the American Psychological Association* (7th ed.). American Psychological Association. https://apastyle.apa.org/
 
 Arias, F. G. (2012). *El proyecto de investigación: Introducción a la metodología científica* (6ª ed.). Editorial Episteme.
 
@@ -953,17 +951,17 @@ Comisión Federal de Electricidad. (2024). *Tarifas domésticas de energía elé
 
 Creswell, J. W., & Creswell, J. D. (2018). *Research design: Qualitative, quantitative, and mixed methods approaches* (5th ed.). SAGE Publications.
 
-Espressif Systems. (2022). *ESP32 Series Datasheet* (ver. 3.4). Espressif Systems. https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf
+Espressif Systems. (2022). *ESP32 Series Datasheet* (ver. 3.4). Espressif Systems. https://www.espressif.com/documentation/esp32_datasheet_en.pdf
 
 Hart, D. W. (2011). *Power electronics*. McGraw-Hill Education.
 
-Hart, G. W. (1992). Nonintrusive appliance load monitoring. *Proceedings of the IEEE*, *80*(12), 1870–1891. https://doi.org/10.1109/5.192069
+Hart, G. W. (1992). Nonintrusive appliance load monitoring. *Proceedings of the IEEE*, *80*(12), 1870–1891.
 
 Hernández Sampieri, R., Fernández Collado, C., & Baptista Lucio, M. del P. (2014). *Metodología de la investigación* (6ª ed.). McGraw-Hill Education.
 
 International Electrotechnical Commission. (2003). *IEC 62053-21: Electricity metering equipment — Particular requirements — Part 21: Static meters for active energy (classes 1 and 2)*. IEC.
 
-Liu, Y., Wang, X., & Jian, W. (2021). Design of Smart Home Energy Management System Based on ESP32. En *Proceedings of the International Conference on Electronic Information Technology* (pp. 112–117). IEEE. https://doi.org/10.1109/ICEIT51700.2021.9375653
+Kaselimi, M., Protopapadakis, E., Voulodimos, A., Doulamis, N. & Doulamis, A. (2022). Towards Trustworthy Energy Disaggregation: A Review of Challenges, Methods, and Perspectives for Non-Intrusive Load Monitoring. *Sensors*, *22*(15), 5872. https://doi.org/10.3390/s22155872
 
 Naciones Unidas. (2015). *Transformar nuestro mundo: La Agenda 2030 para el Desarrollo Sostenible*. Asamblea General de las Naciones Unidas. https://sdgs.un.org/2030agenda
 
@@ -974,5 +972,7 @@ Norma Oficial Mexicana NOM-003-SCFI-2014. (2014). *Productos eléctricos — Req
 OASIS. (2019). *MQTT Version 5.0* (OASIS Standard). OASIS Open. https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html
 
 Oppenheim, A. V., & Willsky, A. S. (2014). *Signals and systems* (2nd ed.). Pearson Education.
+
+Ramadan, R., Huang, Q., Zalhaf, A. S., Bamisile, O., Li, J., Mansour, D.-E. A., Lin, X. & Yehia, D. M. (2024). Energy Management in Residential Microgrid Based on Non-Intrusive Load Monitoring and Internet of Things. *Smart Cities*, *7*(4), 1907–1935. https://doi.org/10.3390/smartcities7040075
 
 [⬆ Volver al inicio](#inicio)
