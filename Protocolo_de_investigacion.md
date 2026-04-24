@@ -1,7 +1,8 @@
 # Protocolo de investigación
 
 **Proyecto:** Diseño e Implementación de un Sistema IoT de Bajo Costo para la Monitorización No Intrusiva de Consumo Eléctrico Residencial mediante Arquitectura ESP32.  
-**Periodo de ejecución:** 2 de febrero de 2026 al 29 de mayo de 2026.
+**Periodo de ejecución:** 2 de febrero de 2026 al 29 de mayo de 2026.  
+**Fecha de actualización del protocolo:** 24 de abril de 2026.
 
 ---
 
@@ -25,6 +26,10 @@ Existe una desconexión entre el consumo eléctrico real de los hogares y la cap
 - menor cultura de eficiencia energética en el hogar.
 
 Aunque existen soluciones comerciales, una parte importante de ellas presenta barreras de adopción: costo elevado, requerimientos de instalación intrusiva y dependencia de ecosistemas cerrados. Se requiere, en consecuencia, una alternativa de bajo costo, segura y técnicamente validada para medición residencial informativa.
+
+### Pregunta de investigación
+
+¿Es factible implementar un sistema IoT residencial no intrusivo, basado en ESP32 con sensado simultáneo de corriente y voltaje, que mantenga una precisión metrológica de error < 5% frente a instrumento TRMS y un costo de manufactura ≤ $600 MXN por unidad?
 
 ---
 
@@ -67,7 +72,7 @@ Reduce la barrera de entrada para monitoreo energético doméstico, con potencia
 
 Favorece prácticas de uso eficiente de energía en vivienda, con efecto indirecto en reducción de demanda y emisiones asociadas.
 
-### Viabilidad
+### Viabilidad de la investigación
 
 - **Técnica:** componentes disponibles y arquitectura factible de implementación.
 - **Operativa:** metodología dividida en fases de laboratorio y campo.
@@ -75,7 +80,7 @@ Favorece prácticas de uso eficiente de energía en vivienda, con efecto indirec
 
 ---
 
-## 5. Marco teórico (referentes)
+## 5. Diseño del marco teórico (referentes teóricos)
 
 El marco teórico se organiza en cuatro ejes:
 
@@ -85,6 +90,13 @@ El marco teórico se organiza en cuatro ejes:
 4. **Arquitectura IoT embebida:** capacidades y limitaciones de ESP32 para adquisición analógica, cómputo local y transmisión inalámbrica.
 
 Este enfoque permite sustentar tanto el diseño del prototipo como los criterios de validación estadística y metrológica.
+
+Además, el marco se apoya en buenas prácticas actuales de investigación aplicada:
+
+- trazabilidad de decisiones de diseño (bitácora técnica);
+- reproducibilidad de análisis (scripts, fórmulas y criterios de aceptación explícitos);
+- transparencia de fuentes de precios y parámetros;
+- delimitación ética: uso informativo no fiscal y no intervención intrusiva en infraestructura.
 
 ---
 
@@ -138,6 +150,7 @@ El prototipo no cumple de manera simultánea los criterios de costo objetivo y p
 - Cálculo de error porcentual y MAPE.
 - Correlación y regresión lineal entre prototipo y patrón.
 - Evaluación de concordancia mediante análisis gráfico especializado.
+- Prueba de normalidad (Shapiro–Wilk) y contraste pareado cuando corresponda.
 
 ### 7.6 Presentación de resultados
 
@@ -149,6 +162,8 @@ El prototipo no cumple de manera simultánea los criterios de costo objetivo y p
 ---
 
 ## 8. Cronograma
+
+> Corte de seguimiento al 24 de abril de 2026: F1–F5 completadas conforme a plan; F6–F8 programadas.
 
 | Fase | Actividad | Inicio | Fin | Entregable |
 |---|---|---:|---:|---|
@@ -163,7 +178,7 @@ El prototipo no cumple de manera simultánea los criterios de costo objetivo y p
 
 ---
 
-## 9. Presupuesto y financiamiento
+## 9. Presupuesto y/o financiamiento
 
 > Estimación en MXN con precios de referencia verificados en línea en abril de 2026.
 
@@ -177,7 +192,8 @@ El prototipo no cumple de manera simultánea los criterios de costo objetivo y p
 | Fuente AC-DC HLK-PM01 (5V) | 1 | 89.00 | 89.00 | Tecneu |
 | Módulo microSD (interfaz) | 1 | 18.90 | 18.90 | ElectroCrea |
 | Consumibles menores (cables, conectores, soldadura, termorretráctil, tornillería) | 1 lote | 120.00 | 120.00 | Estimación técnica |
-| **Total consumibles/componentes** |  |  | **536.40** |  |
+| Margen de contingencia técnica (~12%) | 1 | 63.60 | 63.60 | Reserva para ajustes y reemplazos |
+| **Total consumibles/componentes** |  |  | **600.00** |  |
 
 ### 9.2 Herramienta/equipo de apoyo de validación
 
@@ -205,10 +221,10 @@ Cálculo:
 
 | Rubro | Total (MXN) |
 |---|---:|
-| Consumibles/componentes | 536.40 |
+| Consumibles/componentes | 600.00 |
 | Herramienta/equipo (amortización) | 750.00 |
 | Mano de obra (referencial) | 23,408.00 |
-| **Total general estimado** | **24,694.40** |
+| **Total general estimado** | **24,758.00** |
 
 ### 9.5 Esquema de financiamiento propuesto
 
@@ -227,7 +243,7 @@ Cálculo:
 
 ### 10.2 Referencias externas (actualización técnica y económica)
 
-1. Comisión Federal de Electricidad. (2026). *Tarifas domésticas de energía eléctrica*. https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx
+1. Comisión Federal de Electricidad. (2024). *Tarifas domésticas de energía eléctrica*. https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx
 2. Data México, Secretaría de Economía. (2025). *Ingenieros Electrónicos: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/ingenieros-electronicos
 3. Data México, Secretaría de Economía. (2025). *Electricistas y Linieros: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/electricistas-y-linieros
 4. Espressif Systems. (2022). *ESP32 Series Datasheet*. https://www.espressif.com/documentation/esp32_datasheet_en.pdf
@@ -238,3 +254,13 @@ Cálculo:
 9. ElectroCrea. (2026). *Módulo Micro SD*. https://electrocrea.com/products/modulo-microsd
 10. Kaselimi, M., Protopapadakis, E., Voulodimos, A., Doulamis, N., & Doulamis, A. (2022). Toward trustworthy energy disaggregation: A review of challenges, methods and perspectives for non-intrusive load monitoring. *Sensors, 22*(15), 5872. https://doi.org/10.3390/s22155872
 11. Hart, G. W. (1992). Nonintrusive appliance load monitoring. *Proceedings of the IEEE, 80*(12), 1870–1891.
+12. Bland, J. M., & Altman, D. G. (1986). Statistical methods for assessing agreement between two methods of clinical measurement. *The Lancet, 1*(8476), 307–310. https://pubmed.ncbi.nlm.nih.gov/2868172/
+13. Shapiro, S. S., & Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). *Biometrika, 52*(3–4), 591–611. https://doi.org/10.1093/biomet/52.3-4.591
+14. American Psychological Association. (2020). *Publication manual of the American Psychological Association* (7th ed.). https://apastyle.apa.org/
+
+### 10.3 Criterios de calidad de fuentes y vigencia
+
+- **Prioridad de fuentes:** documentos normativos/oficiales, artículos arbitrados, fichas técnicas de fabricante y precios de proveedores con disponibilidad local.
+- **Vigencia técnica:** hojas de datos y estándares de comunicación revisados contra versión más reciente disponible durante abril de 2026.
+- **Vigencia económica:** cotizaciones de componentes tomadas en abril de 2026, sujetas a variación comercial.
+- **Estilo de citación:** formato APA 7 para consistencia académica.
