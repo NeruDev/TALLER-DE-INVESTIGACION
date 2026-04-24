@@ -1,163 +1,154 @@
 # Protocolo de investigación
 
 **Proyecto:** Diseño e Implementación de un Sistema IoT de Bajo Costo para la Monitorización No Intrusiva de Consumo Eléctrico Residencial mediante Arquitectura ESP32.  
-**Documento base:** `Hipotesis_y_presentacion.md` y `Proyecto completo.md`.  
-**Periodo del proyecto:** del **2 de febrero de 2026** al **29 de mayo de 2026**.
-
----
-
-## Control de coherencia y orden
-
-Este protocolo se estructuró en el **mismo orden solicitado (1–10)** y se alinea con:
-
-- Planteamiento, objetivos, justificación, marco teórico y metodología del documento maestro.
-- Hipótesis y bosquejo metodológico del documento complementario.
-
-Además, se integraron **fuentes externas actuales** para:
-
-1. Actualizar costos de insumos/componentes.
-2. Sustentar mano de obra con referencia laboral estándar en México.
+**Periodo de ejecución:** 2 de febrero de 2026 al 29 de mayo de 2026.
 
 ---
 
 ## 1. Antecedentes del problema
 
-La gestión del consumo eléctrico residencial en México mantiene una brecha de información: el usuario final no recibe retroalimentación instantánea útil para corregir hábitos de consumo durante el periodo de facturación. El proyecto responde a esa brecha mediante un sistema IoT no intrusivo de bajo costo con ESP32, SCT-013-030 y ZMPT101B, orientado al cálculo de potencia activa real y monitoreo local/remoto.
+En México, el consumo eléctrico residencial suele evaluarse a partir de lecturas acumuladas de facturación, sin retroalimentación operativa en tiempo real para el usuario final. Esta condición dificulta identificar cargas ineficientes, consumos en espera y patrones horarios de alto impacto económico.
 
-**Base principal a consultar/redactar:**
-- `Proyecto completo.md` → Introducción, contextualización, antecedentes y estado del arte.
+La literatura técnica en monitoreo no intrusivo de cargas (NILM) ha demostrado que la medición simultánea de corriente y voltaje, junto con procesamiento digital de señales, permite estimar potencia activa con precisión útil para gestión doméstica. En paralelo, el crecimiento de plataformas de bajo costo como ESP32 habilita arquitecturas de instrumentación accesibles para uso residencial.
+
+El problema, por tanto, no es la inexistencia de tecnología de medición, sino su baja accesibilidad económica y de instalación en el contexto doméstico nacional. El presente protocolo se enfoca en cerrar esa brecha mediante un sistema IoT no intrusivo, replicable y de costo contenido.
 
 ---
 
 ## 2. Planteamiento del problema
 
-Existe una desconexión entre consumo real y decisiones del usuario por falta de instrumentos asequibles que ofrezcan medición en tiempo real con precisión suficiente y sin intervención intrusiva del cableado principal. Esto impacta en sobrecostos, riesgo de escalamiento tarifario y menor cultura de eficiencia energética.
+Existe una desconexión entre el consumo eléctrico real de los hogares y la capacidad de decisión del usuario para corregirlo oportunamente. La ausencia de medición continua y comprensible durante el periodo de facturación produce:
 
-**Base principal a consultar/redactar:**
-- `Proyecto completo.md` → sección de planteamiento del problema.
+- sobrecostos por hábitos no optimizados;
+- baja detección de consumos anómalos o fantasma;
+- mayor probabilidad de escalar a esquemas tarifarios de mayor costo;
+- menor cultura de eficiencia energética en el hogar.
+
+Aunque existen soluciones comerciales, una parte importante de ellas presenta barreras de adopción: costo elevado, requerimientos de instalación intrusiva y dependencia de ecosistemas cerrados. Se requiere, en consecuencia, una alternativa de bajo costo, segura y técnicamente validada para medición residencial informativa.
 
 ---
 
-## 3. Objetivos de la investigación: general y específicos
+## 3. Objetivos de la investigación
 
 ### Objetivo general
-Diseñar, implementar y validar un sistema de monitoreo eléctrico residencial IoT, no intrusivo y de bajo costo, basado en ESP32 + SCT-013 + ZMPT101B, con error de potencia activa menor al 5% respecto a instrumento de referencia.
+
+Diseñar, implementar y validar un sistema IoT no intrusivo para monitorización de consumo eléctrico residencial, basado en ESP32, SCT-013-030 y ZMPT101B, capaz de estimar potencia activa con error menor al 5% respecto a un instrumento de referencia TRMS en condiciones de carga doméstica.
 
 ### Objetivos específicos
-1. Definir requerimientos técnicos bajo condiciones residenciales en México.
-2. Diseñar hardware de adquisición y acondicionamiento de señal.
-3. Implementar firmware de adquisición, cálculo eléctrico y transmisión.
-4. Integrar visualización/registro (OLED/microSD).
-5. Validar con protocolo laboratorio + campo contra instrumento patrón TRMS.
-6. Evaluar viabilidad económica de BOM frente a alternativas comerciales.
 
-**Base principal a consultar/redactar:**
-- `Proyecto completo.md` → objetivos general y específicos.
+1. Definir requerimientos funcionales y metrológicos del sistema para entorno residencial monofásico.
+2. Diseñar la arquitectura electrónica de adquisición y acondicionamiento de señales de corriente y voltaje.
+3. Desarrollar firmware de muestreo, cálculo eléctrico y transmisión de datos.
+4. Implementar visualización y persistencia local de información (interfaz local y registro de datos).
+5. Ejecutar calibración y validación comparativa con instrumento patrón.
+6. Evaluar viabilidad económica del prototipo frente a alternativas comerciales.
 
 ---
 
-## 4. Justificación: Impacto social, tecnológico, ético, económico y ambiental. Viabilidad de la investigación
+## 4. Justificación e impacto
 
 ### Impacto social
-Facilita la toma de decisiones de ahorro energético en hogares con acceso limitado a soluciones comerciales.
+
+Aporta una herramienta de diagnóstico energético accesible para hogares que no cuentan con sistemas de medición avanzada.
 
 ### Impacto tecnológico
-Valida integración de sensores no intrusivos y procesamiento digital de señales en plataforma de bajo costo.
+
+Demuestra la integración de sensores no intrusivos, procesamiento de señales y conectividad IoT en una plataforma abierta y de bajo costo.
 
 ### Impacto ético
-Se plantea como sistema informativo de usuario, sin alterar ni sustituir medición fiscal oficial.
+
+El sistema tiene propósito informativo y educativo; no reemplaza instrumentos de facturación oficial ni altera infraestructura de medición fiscal.
 
 ### Impacto económico
-Disminuye barrera de entrada respecto a soluciones comerciales importadas.
+
+Reduce la barrera de entrada para monitoreo energético doméstico, con potencial de ahorro por decisiones de consumo informadas.
 
 ### Impacto ambiental
-Promueve reducción de consumo eléctrico evitable y, por tanto, potencial reducción indirecta de emisiones asociadas al uso residencial.
+
+Favorece prácticas de uso eficiente de energía en vivienda, con efecto indirecto en reducción de demanda y emisiones asociadas.
 
 ### Viabilidad
-- **Técnica:** arquitectura y métricas de desempeño ya definidas.
-- **Operativa:** fases claras de laboratorio y campo.
-- **Económica:** presupuesto acotado y verificable.
 
-**Base principal a consultar/redactar:**
-- `Proyecto completo.md` → justificación y viabilidad.
+- **Técnica:** componentes disponibles y arquitectura factible de implementación.
+- **Operativa:** metodología dividida en fases de laboratorio y campo.
+- **Económica:** costo de materiales dentro de umbral de bajo presupuesto.
 
 ---
 
-## 5. Diseño del marco teórico (referentes teóricos)
+## 5. Marco teórico (referentes)
 
-Se propone integrar cuatro bloques:
+El marco teórico se organiza en cuatro ejes:
 
-1. **Fundamentos eléctricos y de medición:** ley de Faraday, RMS, potencia activa, factor de potencia.
-2. **Procesamiento digital de señales:** muestreo, discretización ADC, cálculo de magnitudes eléctricas en tiempo discreto.
-3. **IoT y arquitectura embebida:** capacidades/limitaciones del ESP32 (ADC, WiFi, doble núcleo).
-4. **Marco contextual y normativo:** monitoreo residencial, rol de CFE, límites del instrumento informativo no fiscal.
+1. **Fundamentos eléctricos:** valor eficaz (RMS), potencia activa, factor de potencia y relación entre magnitudes instantáneas.
+2. **Instrumentación y sensado:** principio de operación de transformadores de corriente no intrusivos y sensores de voltaje AC.
+3. **Procesamiento digital de señales:** muestreo, cuantización, filtrado y cálculo discreto de métricas eléctricas.
+4. **Arquitectura IoT embebida:** capacidades y limitaciones de ESP32 para adquisición analógica, cómputo local y transmisión inalámbrica.
 
-**Base principal a consultar/redactar:**
-- `Proyecto completo.md` → marco teórico (antecedentes, bases teóricas, estado del arte, marco conceptual y normativo).
+Este enfoque permite sustentar tanto el diseño del prototipo como los criterios de validación estadística y metrológica.
 
 ---
 
-## 6. Formulación de hipótesis o supuestos (si corresponde)
+## 6. Hipótesis o supuestos
 
 ### Hipótesis general
-El sistema IoT propuesto puede mantener costo objetivo de fabricación y precisión de medición de potencia activa en el umbral definido para cargas domésticas relevantes.
+
+El sistema IoT propuesto puede cumplir simultáneamente con un costo de implementación de bajo presupuesto y un error de potencia activa inferior al 5% frente a instrumento TRMS, para cargas residenciales dentro del rango operativo definido.
 
 ### Hipótesis nula
-El prototipo no cumple simultáneamente con costo objetivo y precisión metrológica mínima.
 
-### Hipótesis específicas (operacionales)
-- Linealidad del SCT-013-030 en rango definido.
-- Estabilidad de alimentación con rizado bajo.
-- Mejora de cálculo de potencia activa con medición simultánea de voltaje y corriente.
-- Viabilidad económica frente a referencia comercial.
+El prototipo no cumple de manera simultánea los criterios de costo objetivo y precisión metrológica establecidos.
 
-**Base principal a consultar/redactar:**
-- `Hipotesis_y_presentacion.md` → hipótesis general/nula/alternativa/específicas.
-- `Proyecto completo.md` → hipótesis consolidadas.
+### Hipótesis específicas
+
+1. La relación entre corriente real y lectura acondicionada del SCT-013-030 mantiene linealidad adecuada en el rango de trabajo.
+2. La adquisición simultánea de voltaje y corriente mejora la estimación de potencia activa frente a aproximaciones con voltaje nominal constante.
+3. La fuente de alimentación y el diseño de acondicionamiento no introducen ruido que comprometa la precisión objetivo.
+4. El costo total de materiales mantiene ventaja económica frente a opciones comerciales comparables.
 
 ---
 
 ## 7. Bosquejo del método
 
-### 7.1 Determinación del universo y obtención de la muestra
-- **Universo:** condiciones de carga residencial monofásica dentro del rango operativo del prototipo.
-- **Muestra:** niveles de carga/corriente representativos (resistivas e inductivas), con repeticiones por nivel y comparación prototipo vs patrón.
+### 7.1 Universo y muestra
 
-### 7.2 Determinación del tipo de estudio (Tipo de investigación)
-- Aplicada y tecnológica.
+- **Universo:** condiciones de consumo residencial monofásico en el rango operativo del sistema.
+- **Muestra:** niveles de carga representativos (resistivos e inductivos) con repeticiones por nivel y comparación directa entre prototipo e instrumento patrón.
+
+### 7.2 Tipo de estudio
+
+- Investigación aplicada y tecnológica.
 - Enfoque cuantitativo.
-- Alcance correlacional-explicativo.
-- Diseño mixto (laboratorio + campo).
-- Carácter experimental.
+- Alcance correlacional y explicativo.
+- Diseño experimental mixto (laboratorio + campo).
 
-### 7.3 Selección, diseño y prueba del instrumento de recolección de la información
-- Instrumento principal: prototipo SME-IoT.
-- Referencia: multímetro TRMS calibrado.
-- Prueba piloto para validar estabilidad, saturación ADC, integridad de registro y consistencia metrológica.
+### 7.3 Diseño y prueba del instrumento
 
-### 7.4 Plan de recolección de la información para el trabajo de campo
-- Fase laboratorio: calibración y ajuste de factores.
-- Fase campo: instalación en vivienda, registro continuo temporal y comparación con referencia.
+- Instrumento principal: prototipo de medición IoT.
+- Instrumento de referencia: multímetro TRMS calibrado.
+- Piloto inicial para verificar estabilidad, saturación ADC, coherencia de registro e integridad de datos.
 
-### 7.5 Plan de procesamiento y análisis de información
-- Limpieza e integridad de datos.
-- Cálculo de métricas: MAPE, error porcentual, correlación, regresión lineal y pruebas de concordancia.
+### 7.4 Recolección de información
 
-### 7.6 Plan de presentación gráfica de los resultados
-- Dispersión Prototipo vs Patrón + regresión.
+- **Fase laboratorio:** calibración, ajuste de parámetros y pruebas controladas por niveles de carga.
+- **Fase campo:** monitoreo en vivienda, adquisición temporal continua y contraste con medición de referencia.
+
+### 7.5 Procesamiento y análisis
+
+- Validación de integridad y depuración de datos.
+- Cálculo de error porcentual y MAPE.
+- Correlación y regresión lineal entre prototipo y patrón.
+- Evaluación de concordancia mediante análisis gráfico especializado.
+
+### 7.6 Presentación de resultados
+
+- Dispersión Prototipo vs Patrón con línea de ajuste.
 - Curvas de error por nivel de carga.
-- Bland–Altman para concordancia.
+- Gráficas de concordancia.
 - Series temporales de potencia y energía acumulada.
-
-**Base principal a consultar/redactar:**
-- `Hipotesis_y_presentacion.md` → bosquejo metodológico detallado.
-- `Proyecto completo.md` → marco metodológico y procedimiento experimental.
 
 ---
 
 ## 8. Cronograma
-
-Cronograma alineado al periodo real del proyecto (**02-feb-2026 a 29-may-2026**).
 
 | Fase | Actividad | Inicio | Fin | Entregable |
 |---|---|---:|---:|---|
@@ -172,10 +163,9 @@ Cronograma alineado al periodo real del proyecto (**02-feb-2026 a 29-may-2026**)
 
 ---
 
-## 9. Presupuesto y/o financiamiento (si corresponde)
+## 9. Presupuesto y financiamiento
 
-> Estimación en MXN con precios consultados en línea (abril 2026).  
-> Se separa en **consumibles**, **herramienta/equipo**, y **mano de obra estándar** para proyectos tecnológicos académicos similares.
+> Estimación en MXN con precios de referencia verificados en línea en abril de 2026.
 
 ### 9.1 Consumibles y componentes del prototipo (1 unidad)
 
@@ -185,76 +175,66 @@ Cronograma alineado al periodo real del proyecto (**02-feb-2026 a 29-may-2026**)
 | Sensor SCT-013-030 | 1 | 130.00 | 130.00 | SANDOROBOTICS |
 | Sensor ZMPT101B | 1 | 48.50 | 48.50 | Geek Factory |
 | Fuente AC-DC HLK-PM01 (5V) | 1 | 89.00 | 89.00 | Tecneu |
-| Módulo microSD (interfaz) | 1 | 23.23 | 23.23 | ElectroCrea |
-| Consumibles menores (cables, conectores, soldadura, termorretráctil, tornillería) | 1 lote | 120.00 | 120.00 | Estimación técnica de integración |
-| **Total consumibles/componentes** |  |  | **540.73** |  |
+| Módulo microSD (interfaz) | 1 | 18.90 | 18.90 | ElectroCrea |
+| Consumibles menores (cables, conectores, soldadura, termorretráctil, tornillería) | 1 lote | 120.00 | 120.00 | Estimación técnica |
+| **Total consumibles/componentes** |  |  | **536.40** |  |
 
 ### 9.2 Herramienta/equipo de apoyo de validación
 
 | Concepto | Criterio de costeo | Monto (MXN) |
 |---|---|---:|
-| Multímetro TRMS calibrado (amortización para el proyecto) | Prorrateo de uso académico del instrumento en el periodo | 450.00 |
-| Herramienta de taller (cautín, estación, pinzas, EPP, etc.) | Prorrateo por uso durante 4 meses | 300.00 |
+| Multímetro TRMS calibrado (amortización) | Prorrateo por uso académico durante el periodo del proyecto | 450.00 |
+| Herramienta de taller y EPP (amortización) | Prorrateo por uso en 4 meses de ejecución | 300.00 |
 | **Subtotal herramienta/equipo** |  | **750.00** |
 
-### 9.3 Mano de obra (estándar de referencia)
+### 9.3 Mano de obra de referencia
 
-Para evitar sobreestimación, se usa esquema de dedicación parcial con base en referencias salariales oficiales (Data México / Secretaría de Economía):
+Para estimación de costo estándar se considera dedicación parcial en 4 meses, con base en salarios promedio reportados por Data México:
 
-- **Ingeniero electrónico:** salario promedio mensual de referencia **$8,840 MXN**.
-- **Electricista/liniero de apoyo:** salario promedio mensual de referencia **$7,160 MXN**.
+- Ingeniería electrónica: **$8,840 MXN/mes** (referencia 2025-T1).
+- Electricistas y linieros: **$7,160 MXN/mes** (referencia 2025-T1).
 
-Cálculo para 4 meses de proyecto:
+Cálculo:
 
-- Ingeniero electrónico (50% dedicación): 8,840 × 4 × 0.50 = **17,680.00 MXN**
-- Técnico electricista (20% dedicación): 7,160 × 4 × 0.20 = **5,728.00 MXN**
+- Ingeniería electrónica (50% dedicación): 8,840 × 4 × 0.50 = **17,680.00 MXN**.
+- Técnico electricista (20% dedicación): 7,160 × 4 × 0.20 = **5,728.00 MXN**.
 
-**Subtotal mano de obra:** **23,408.00 MXN**
+**Subtotal mano de obra:** **23,408.00 MXN**.
 
-### 9.4 Resumen financiero del protocolo
+### 9.4 Resumen financiero
 
 | Rubro | Total (MXN) |
 |---|---:|
-| Consumibles/componentes | 540.73 |
+| Consumibles/componentes | 536.40 |
 | Herramienta/equipo (amortización) | 750.00 |
-| Mano de obra | 23,408.00 |
-| **Total general estimado** | **24,698.73** |
+| Mano de obra (referencial) | 23,408.00 |
+| **Total general estimado** | **24,694.40** |
 
-### 9.5 Financiamiento
+### 9.5 Esquema de financiamiento propuesto
 
-Se propone financiamiento mixto:
-- Aportación del investigador para consumibles/componentes.
-- Uso de infraestructura de laboratorio institucional (herramienta/equipo).
-- Mano de obra valorizada como costo estándar de proyecto (no necesariamente flujo de caja directo).
+- Aportación directa del investigador para componentes y consumibles.
+- Uso de infraestructura institucional para pruebas.
+- Mano de obra considerada como valorización de proyecto académico-tecnológico.
 
 ---
 
 ## 10. Fuentes consultadas
 
-### 10.1 Fuentes base internas (obligatorias)
+### 10.1 Referencias documentales del proyecto
 
-1. `Proyecto completo.md` (documento maestro vigente).
-2. `Hipotesis_y_presentacion.md` (hipótesis y método).
+- Documento de investigación integral del proyecto (versión compilada vigente).
+- Documento de hipótesis y bosquejo metodológico (complemento técnico).
 
-### 10.2 Fuentes externas para actualización de cifras y contexto
+### 10.2 Referencias externas (actualización técnica y económica)
 
-1. Pigra. *ESP32D DEVKIT V1* (precio de referencia en MXN). https://pigra.com.mx/electronica/73-esp32d.html
-2. SANDOROBOTICS. *Sensor de Corriente No Invasivo 30A, SCT013*. https://sandorobotics.com.mx/producto/hr0214-118a/
-3. Geek Factory. *Módulo Sensor de Voltaje AC Monofásico ZMPT101B*. https://www.geekfactory.mx/categoria-de-producto/modulos/mod-acondicionamiento/
-4. Tecneu. *Convertidor AC-DC Fuente 5V HLK-PM01*. https://www.tecneu.com/products/convertidor-ac-dc-fuente-5v-hlk-pm01
-5. ElectroCrea. *Módulo Micro SD*. https://electrocrea.com/products/modulo-microsd
-6. Data México (Secretaría de Economía). *Ingenieros Electrónicos: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/ingenieros-electronicos
-7. Data México (Secretaría de Economía). *Electricistas y Linieros: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/electricistas-y-linieros
-8. CFE. *Tarifas domésticas (consulta oficial)*. https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx
-
----
-
-## Nota de uso para redacción final
-
-Si se requiere versión final “lista para entrega”, este archivo ya contiene:
-
-- Orden completo 1–10 solicitado.
-- Criterios de coherencia con documentos base.
-- Cronograma fechado exactamente al periodo real del proyecto.
-- Presupuesto con separación de consumibles, herramienta y mano de obra estándar.
-- Fuentes trazables para actualización de cifras.
+1. Comisión Federal de Electricidad. (2026). *Tarifas domésticas de energía eléctrica*. https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx
+2. Data México, Secretaría de Economía. (2025). *Ingenieros Electrónicos: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/ingenieros-electronicos
+3. Data México, Secretaría de Economía. (2025). *Electricistas y Linieros: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/electricistas-y-linieros
+4. Espressif Systems. (2022). *ESP32 Series Datasheet*. https://www.espressif.com/documentation/esp32_datasheet_en.pdf
+5. Pigra. (2026). *ESP32D DEVKIT V1*. https://pigra.com.mx/electronica/73-esp32d.html
+6. SANDOROBOTICS. (2026). *Sensor de Corriente No Invasivo 30A, SCT013*. https://sandorobotics.com.mx/producto/hr0214-118a/
+7. Geek Factory. (2026). *Módulo Sensor de Voltaje AC Monofásico ZMPT101B*. https://www.geekfactory.mx/producto/sensor-voltaje-ac-zmpt101b/
+8. Tecneu. (2026). *Convertidor AC-DC Fuente 5V HLK-PM01*. https://www.tecneu.com/products/convertidor-ac-dc-fuente-5v-hlk-pm01
+9. ElectroCrea. (2026). *Módulo Micro SD*. https://electrocrea.com/products/modulo-microsd
+10. Kaselimi, M., Protopapadakis, E., Voulodimos, A., Doulamis, N., & Doulamis, A. (2022). Toward trustworthy energy disaggregation: A review of challenges, methods and perspectives for non-intrusive load monitoring. *Sensors, 22*(15), 5872. https://doi.org/10.3390/s22155872
+11. Hart, G. W. (1992). Nonintrusive appliance load monitoring. *Proceedings of the IEEE, 80*(12), 1870–1891.
