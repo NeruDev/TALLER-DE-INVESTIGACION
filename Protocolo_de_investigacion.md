@@ -10,21 +10,21 @@
 
 ## 1. Antecedentes del problema
 
-En el panorama energético nacional, observo que la evaluación del consumo eléctrico residencial en México depende predominantemente de lecturas acumuladas bimestrales. Esta carencia de retroalimentación operativa en tiempo real impide a los usuarios identificar cargas ineficientes y patrones horarios de alto impacto económico.
+Si vemos cómo está la situación de la luz en México, me doy cuenta de que la mayoría de las familias solo sabemos cuánto gastamos cuando llega el recibo cada dos meses. No hay una forma real de saber qué está pasando día a día. Esto es un problema porque, sin esos datos, es imposible saber qué aparato está fallando o si tenemos hábitos que nos están costando dinero de más.
 
-Tras analizar la literatura técnica sobre el Monitoreo No Intrusivo de Cargas (NILM), confirmo que la medición simultánea de corriente y voltaje, integrada con algoritmos de procesamiento digital de señales, permite estimar la potencia activa con una precisión metrológica útil para la gestión doméstica. Por ello, propongo utilizar la arquitectura ESP32 para desarrollar un sistema de instrumentación accesible que cierre la brecha entre el costo tecnológico y la adopción residencial.
+Estuve revisando la literatura técnica sobre el monitoreo no intrusivo (NILM) y la verdad es que la teoría es clara: si mides corriente y voltaje al mismo tiempo, puedes sacar la potencia activa con mucha precisión. Por eso, decidí usar el ESP32. Me parece que es la mejor plataforma para armar un sistema que sea barato pero que de verdad sirva para una casa normal en nuestra zona, cerrando esa brecha entre lo que cuesta la tecnología y lo que la gente realmente puede pagar.
 
 ---
 
 ## 2. Planteamiento del problema
 
-Detecto una desconexión crítica entre el consumo eléctrico real y la capacidad de decisión del usuario. En mis observaciones preliminares en el municipio de **Tenango del Valle**, identifico que la ausencia de medición continua produce sobrecostos por hábitos no optimizados y una baja detección de consumos en espera (*standby*).
+Hay una desconexión total entre lo que consumimos y lo que podemos decidir para ahorrar. En las pruebas que he hecho y lo que he observado en casas de **Tenango del Valle**, veo que no tener datos al momento causa muchos problemas: pagamos de más por no optimizar el uso de los aparatos, no nos damos cuenta de los consumos "fantasma" de equipos viejos y siempre está el miedo de que la CFE nos suba a la tarifa DAC sin avisar.
 
-Aunque existen soluciones comerciales, sus barreras de adopción (costo elevado y dependencia de ecosistemas cerrados) limitan su uso. Por tanto, asumo el desarrollo de una alternativa de bajo costo, técnicamente validada, que mantenga un costo de manufactura ≤ **$600 MXN** y garantice seguridad operativa.
+Las opciones que venden por ahí son carísimas, a veces pasan de los $1,500 pesos, y además te obligan a usar sus aplicaciones cerradas. Por eso me puse el reto de hacer una alternativa de bajo costo. Mi idea es que el hardware no pase de los **$600 MXN** y que sea lo suficientemente seguro para que cualquier persona lo tenga en su casa sin riesgos.
 
 ### Pregunta de investigación
 
-¿Es factible para mí implementar un sistema IoT residencial no intrusivo, basado en la arquitectura ESP32, que mantenga una precisión de error < 5% frente a un instrumento de referencia y un costo inferior a $600 MXN, validándolo en el contexto de Tenango del Valle?
+¿Es posible para mí desarrollar un sistema IoT que use el ESP32, que sea preciso (error < 5%) y que cueste menos de $600 pesos, probándolo directamente en viviendas de Tenango del Valle?
 
 ---
 
@@ -32,119 +32,122 @@ Aunque existen soluciones comerciales, sus barreras de adopción (costo elevado 
 
 ### Objetivo general
 
-Desarrollar un sistema IoT de monitorización no intrusiva para la gestión del consumo eléctrico residencial, basado en la arquitectura ESP32 y sensado simultáneo de parámetros eléctricos, con el fin de validar su precisión metrológica y viabilidad económica en el municipio de Tenango del Valle.
+Desarrollar un sistema IoT de monitorización no intrusiva para la gestión del consumo eléctrico residencial, basado en la arquitectura ESP32 y sensado simultáneo de parámetros eléctricos, con el fin de validar su precisión y viabilidad económica en el municipio de Tenango del Valle.
 
 ### Objetivos específicos
 
-1. Caracterizar los requerimientos técnicos y funcionales del sistema de medición considerando las normativas de la infraestructura eléctrica residencial mexicana.
-2. Diseñar la arquitectura electrónica de adquisición y la etapa de acondicionamiento de señales para los transductores de corriente y voltaje.
-3. Programar los algoritmos de procesamiento digital de señales para el cálculo de potencia activa real y la gestión de conectividad inalámbrica.
-4. Integrar los módulos de visualización local y almacenamiento masivo para garantizar la persistencia de datos ante contingencias de red.
-5. Evaluar el desempeño del prototipo mediante pruebas comparativas contra instrumentación TRMS de referencia para determinar el error porcentual absoluto medio.
-6. Comparar la estructura de costos del prototipo final frente a soluciones comerciales para determinar su índice de ahorro y factibilidad de implementación.
+1. Analizar qué es lo que realmente necesita un sistema de estos para aguantar las condiciones de la red eléctrica en las casas de México.
+2. Diseñar el circuito y la etapa para acondicionar las señales de los sensores de corriente y voltaje para que el ESP32 las lea bien.
+3. Escribir el código para que el microcontrolador haga los cálculos de potencia activa y se conecte al WiFi sin trabarse.
+4. Meterle una pantalla OLED y un lector de tarjetas microSD para que el usuario vea sus datos y estos se guarden aunque se vaya el internet.
+5. Hacer pruebas comparando mi prototipo contra un multímetro profesional (TRMS) para ver qué tanto error tengo realmente.
+6. Revisar cuánto me gasté al final y comparar ese costo contra lo que cuestan los equipos comerciales para ver si de verdad es una opción viable.
 
 ---
 
 ## 4. Justificación e impacto
 
 ### Impacto tecnológico
-Demostraré la integración de sensores no intrusivos y conectividad IoT en una plataforma de hardware abierto, validando protocolos de calibración para convertidores analógico-digitales de resolución limitada.
+Quiero demostrar que se pueden integrar sensores no intrusivos en una plataforma abierta como el ESP32. Además, me interesa validar cómo calibrar estos sensores cuando usas convertidores (ADC) que no tienen tanta resolución, algo que es muy común en proyectos de bajo presupuesto.
 
 ### Impacto económico
-Reduciré la barrera de entrada para el monitoreo energético doméstico, posicionando el costo del dispositivo un 60% por debajo de las soluciones de mercado actuales.
+Básicamente, quiero bajar la barrera de entrada. Si logro que el aparato cueste un 60% menos que lo que hay en el mercado, mucha más gente va a poder monitorear su energía.
 
 ### Impacto ambiental
-Favoreceré prácticas de eficiencia energética en la vivienda, lo que impactará indirectamente en la reducción de la demanda eléctrica y las emisiones de CO2 asociadas.
+Si la gente ve cuánto gasta, va a empezar a apagar cosas. Eso ayuda a gastar menos luz y, al final, eso reduce la demanda eléctrica y las emisiones de CO2. Es un beneficio indirecto pero real.
 
 ---
 
-## 5. Diseño del marco teórico (Ejes técnicos)
+## 5. Diseño del marco teórico
 
-Fundamentaré mi investigación en cuatro pilares científicos:
-1. **Fundamentos eléctricos:** Analizaré el valor eficaz (RMS), potencia activa y factor de potencia mediante el estudio de magnitudes instantáneas.
-2. **Instrumentación y sensado:** Aplicaré los principios de inducción electromagnética para transformadores de corriente de núcleo partido y sensores de voltaje con aislamiento galvánico.
-3. **Procesamiento digital de señales:** Implementaré técnicas de muestreo, cuantización y filtrado para el cálculo discreto de métricas eléctricas.
-4. **Arquitectura IoT embebida:** Optimizaré el uso del ESP32 para la adquisición analógica y el cómputo en el borde (*Edge Computing*).
+Para que esto funcione, me estoy apoyando en estos puntos:
+1. **Electricidad:** Entender bien qué es el valor RMS y la potencia activa. Si no calculo esto bien desde la base, los datos no le van a servir al usuario.
+2. **Instrumentación:** Voy a usar sensores de "núcleo partido" para la corriente. Me parecen lo mejor porque se instalan como un clip, sin tocar los cables vivos. Para el voltaje, usaré un transformador pequeño con aislamiento por seguridad.
+3. **Procesamiento de señales:** Tengo que programar el muestreo y el filtrado digital. Si el código no está bien hecho, el ruido de la red me va a arruinar las lecturas.
+4. **IoT:** Elegí el ESP32 porque tiene doble núcleo y WiFi. Es mucho más capaz que un Arduino y me permite procesar datos en un núcleo mientras el otro maneja la red.
 
 ---
 
 ## 6. Hipótesis
 
-### Hipótesis del investigador
-Lograré cumplir simultáneamente con el costo de implementación de bajo presupuesto y un error de potencia activa inferior al 5% frente a un instrumento patrón, aplicando una calibración precisa del sistema.
+### Mi hipótesis
+Pienso que si calibro bien el sistema y optimizo el código, voy a lograr que el error sea menor al 5% y que el costo total no pase de los $600 pesos.
 
 ### Supuestos técnicos
-1. Estimo que la relación entre la corriente real y la lectura acondicionada del sensor SCT-013-030 mantendrá la linealidad adecuada en el rango operativo residencial.
-2. Sostengo que la adquisición simultánea de voltaje mejora significativamente la estimación de potencia activa frente a métodos que asumen voltaje nominal constante.
+1. Creo que el sensor SCT-013 va a responder de forma lineal en el rango de consumo que tiene una casa normal.
+2. Estoy convencido de que medir el voltaje real (en lugar de solo suponer que hay 127V) es la clave para que la potencia activa salga exacta.
 
 ---
 
-## 7. Bosquejo del método
+## 7. Metodología (Cómo lo voy a hacer)
 
-### 7.1 Universo y muestra
-Delimitaré mi estudio a las condiciones de consumo residencial monofásico en el municipio de **Tenango del Valle, Estado de México**. Seleccionaré una vivienda unifamiliar de dicha localidad para la fase de validación de campo, recolectando registros de carga representativos bajo condiciones reales de operación.
+### 7.1 Localización y Muestra
+Voy a hacer las pruebas en el municipio de **Tenango del Valle**. Elegí una casa unifamiliar de ahí porque tiene la instalación típica monofásica que me interesa estudiar. Me parece que es el entorno ideal para validar que el equipo funciona en el "mundo real".
 
-### 7.2 Tipo de estudio
-- **Investigación aplicada y tecnológica:** Aplicaré leyes fundamentales de la ingeniería electrónica para desarrollar un prototipo funcional que resuelva un problema práctico de visibilidad energética.
-- **Enfoque cuantitativo:** Utilizaré la recolección de datos numéricos y herramientas estadísticas para validar la precisión del sistema.
-- **Alcance correlacional y explicativo:** Determinaré la correlación entre las lecturas del prototipo y el instrumento patrón, analizando las causas técnicas de las desviaciones (como la no linealidad del ADC).
-- **Diseño experimental mixto:** Alternaré entre pruebas controladas de laboratorio y monitoreo en campo.
+### 7.2 Mi enfoque
+- **Investigación Aplicada:** Voy a usar la electrónica para resolver un problema que veo diario.
+- **Cuantitativo:** Todo se basa en números y comparaciones. Si mi prototipo dice 10A y el multímetro profesional dice 10.1A, entonces voy por buen camino.
+- **Experimental:** Voy a construir el aparato y lo voy a probar con diferentes cargas para ver cómo se comporta.
 
-### 7.3 Procedimiento experimental
-1. **Fase de integración:** Ensamblaré el hardware y desarrollaré el código sobre la arquitectura de doble núcleo del ESP32.
-2. **Fase de calibración:** Aplicaré cargas resistivas conocidas para ajustar los factores de escala y compensar el *offset* de los sensores.
-3. **Fase de validación:** Instalaré el dispositivo en Tenango del Valle para realizar un monitoreo continuo de 24 a 72 horas, contrastando los resultados con un multímetro TRMS calibrado.
-
----
-
-## 8. Cronograma (Etapa Documental)
-
-| Fase | Actividad | Inicio | Fin | Entregable |
-|---|---|---:|---:|---|
-| F1 | Investigación de antecedentes y planteamiento técnico | 2026-02-02 | 2026-02-13 | Capítulos 1 y 2 |
-| F2 | Definición de objetivos y análisis de impacto social/económico | 2026-02-16 | 2026-03-06 | Capítulos 3 y 4 |
-| F3 | Estructuración del marco teórico y revisión del estado del arte | 2026-03-09 | 2026-03-20 | Capítulo 5 |
-| F4 | Formulación de hipótesis y operacionalización de variables métricas | 2026-03-23 | 2026-04-03 | Capítulo 6 |
-| F5 | Diseño del bosquejo metodológico y tipos de estudio detallados | 2026-04-06 | 2026-04-24 | Sección 7 |
-| F6 | Integración final del protocolo, presupuesto y referencias APA 7 | 2026-04-27 | 2026-05-29 | Protocolo completo |
+### 7.3 Pasos del experimento
+1. **Integración:** Primero voy a soldar todo y a programar el ESP32. Aquí es donde voy a ver si mi diseño de hardware realmente funciona.
+2. **Calibración:** Usaré cargas conocidas para ajustar los "factores" en el código. Es un proceso de prueba y error hasta que los datos coincidan.
+3. **Validación en campo:** Me voy a llevar el equipo a la casa en Tenango y lo voy a dejar midiendo de 24 a 72 horas seguidas. Quiero ver cómo se porta con el uso real de una familia.
 
 ---
 
-## 9. Presupuesto y/o financiamiento
+## 8. Cronograma (Fases de mi trabajo)
 
-Invertiré en los siguientes componentes para la manufactura de una unidad del prototipo:
+| Fase | Qué voy a hacer | Inicio | Fin |
+|---|---|---:|---:|
+| F1 | Investigar antecedentes y armar el planteamiento técnico. | 02-Feb | 13-Feb |
+| F2 | Definir objetivos y ver cómo impacta el proyecto. | 16-Feb | 06-Mar |
+| F3 | Armar el marco teórico y ver qué más hay en el mercado. | 09-Mar | 20-Mar |
+| F4 | Poner mis hipótesis y definir mis variables. | 23-Mar | 03-Abr |
+| F5 | Diseñar toda la metodología y los pasos del experimento. | 06-Abr | 24-Abr |
+| F6 | Juntar todo el protocolo, checar el presupuesto y las referencias. | 27-Abr | 29-May |
 
-| Concepto | Especificación Técnica | Costo (MXN) |
+---
+
+## 9. Presupuesto (Lo que voy a gastar)
+
+Esto es lo que calculo que me voy a gastar en materiales:
+
+| Concepto | Especificación técnica | Costo (MXN) |
 |---|---|---|
-| **ESP32 DevKit V1** | Microcontrolador Dual-Core con WiFi/BT integrado. | $130.00 |
-| **Sensor SCT-013-030** | Transformador de corriente de núcleo partido (30A/1V). | $130.00 |
-| **Sensor ZMPT101B** | Módulo de voltaje AC con aislamiento galvánico. | $48.50 |
-| **Fuente HLK-PM01** | Convertidor AC-DC conmutado 5V/700mA. | $89.00 |
-| **Módulo MicroSD** | Interfaz SPI para persistencia de datos local. | $18.90 |
-| **Consumibles** | Cables, conectores, gabinete y soldadura. | $183.60 |
-| **Total General** | | **$600.00** |
+| **ESP32 DevKit V1** | El microcontrolador principal. | $130.00 |
+| **Sensor SCT-013-030** | El clip para medir la corriente. | $130.00 |
+| **Sensor ZMPT101B** | Para medir el voltaje de forma segura. | $48.50 |
+| **Fuente HLK-PM01** | Para alimentar todo desde el enchufe. | $89.00 |
+| **Módulo MicroSD** | Para que no se pierdan los datos. | $18.90 |
+| **Varios** | Cables, conectores, caja y soldadura. | $183.60 |
+| **Total** | | **$600.00** |
 
 ---
 
 ## 10. Glosario y Referencias
 
-### 10.1 Glosario de términos técnicos
+### 10.1 Glosario técnico (A mi manera)
 
-- **ADC (Analog-to-Digital Converter):** Periférico encargado de la cuantización de señales analógicas en valores digitales discretos.
-- **ESP32:** System-on-Chip (SoC) basado en la arquitectura Xtensa® LX6 de 32 bits, optimizado para aplicaciones IoT.
-- **NILM (Non-Intrusive Load Monitoring):** Estrategia de monitorización energética basada en la adquisición de señales en un punto de acometida común.
-- **RMS (Root Mean Square):** Medida estadística de la magnitud de una cantidad variable, fundamental para el cálculo de potencia activa.
-- **SCT-013-030:** Transductor de corriente basado en el principio de inducción, diseñado para instalación sin contacto galvánico.
-- **TRMS (True Root Mean Square):** Capacidad de un instrumento para medir con precisión formas de onda no sinusoidales mediante el cálculo del valor eficaz real.
-- **ZMPT101B:** Transformador de tensión de alta precisión con acondicionamiento de señal integrado para lectura de voltaje AC.
+- **ADC:** Es la parte del chip que convierte la señal de los sensores en números que el código puede entender.
+- **ESP32:** El cerebro del proyecto. Lo elegí porque es barato y tiene mucha potencia para manejar el WiFi.
+- **NILM:** Es la técnica de medir todo desde un solo punto sin tener que andar cortando cables por toda la casa.
+- **RMS:** Es el valor eficaz. Es lo que realmente importa para calcular cuánta luz estamos gastando.
+- **TRMS:** Es una característica de los multímetros buenos para medir señales que no son una onda perfecta.
+- **ZMPT101B:** Es el sensor que voy a usar para el voltaje; es clave para calcular la potencia activa real.
 
-### 10.2 Referencias bibliográficas (APA 7)
+### 10.2 Referencias (Formato APA 7)
 
-1. Comisión Federal de Electricidad. (2024). *Tarifas domésticas de energía eléctrica*. https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx
-2. Data México, Secretaría de Economía. (2025). *Ingenieros Electrónicos: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/ingenieros-electronicos
-3. Espressif Systems. (2022). *ESP32 Series Datasheet*. https://www.espressif.com/documentation/esp32_datasheet_en.pdf
-4. Kaselimi, M., Protopapadakis, E., Voulodimos, A., Doulamis, N., & Doulamis, A. (2022). Toward trustworthy energy disaggregation: A review of challenges, methods and perspectives for non-intrusive load monitoring. *Sensors, 22*(15), 5872. https://doi.org/10.3390/s22155872
+1. American Psychological Association. (2020). *Publication manual of the American Psychological Association* (7th ed.). https://apastyle.apa.org/
+2. Comisión Federal de Electricidad. (2024). *Tarifas domésticas de energía eléctrica*. https://app.cfe.mx/Aplicaciones/CCFE/Tarifas/TarifasCRECasa/Casa.aspx
+3. Data México, Secretaría de Economía. (2025). *Ingenieros Electrónicos: salarios y fuerza laboral*. https://www.economia.gob.mx/datamexico/es/profile/occupation/ingenieros-electronicos
+4. Espressif Systems. (2022). *ESP32 Series Datasheet*. https://www.espressif.com/documentation/esp32_datasheet_en.pdf
 5. Hart, G. W. (1992). Nonintrusive appliance load monitoring. *Proceedings of the IEEE, 80*(12), 1870–1891.
-6. Bland, J. M., & Altman, D. G. (1986). Statistical methods for assessing agreement between two methods of clinical measurement. *The Lancet, 1*(8476), 307–310.
-7. Shapiro, S. S., & Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). *Biometrika, 52*(3–4), 591–611.
-8. American Psychological Association. (2020). *Publication manual of the American Psychological Association* (7th ed.). https://apastyle.apa.org/
+6. Kaselimi, M., Protopapadakis, E., Voulodimos, A., Doulamis, N., & Doulamis, A. (2022). Toward trustworthy energy disaggregation: A review of challenges, methods and perspectives for non-intrusive load monitoring. *Sensors, 22*(15), 5872. https://doi.org/10.3390/s22155872
+7. Bland, J. M., & Altman, D. G. (1986). Statistical methods for assessing agreement between two methods of clinical measurement. *The Lancet, 1*(8476), 307–310.
+8. Shapiro, S. S., & Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). *Biometrika, 52*(3–4), 591–611.
+9. Pigra. (2026). *ESP32D DEVKIT V1*. https://pigra.com.mx/electronica/73-esp32d.html
+10. SANDOROBOTICS. (2026). *Sensor de Corriente No Invasivo 30A, SCT013*. https://sandorobotics.com.mx/producto/hr0214-118a/
+11. Geek Factory. (2026). *Módulo Sensor de Voltaje AC Monofásico ZMPT101B*. https://www.geekfactory.mx/producto/sensor-voltaje-ac-zmpt101b/
+12. Tecneu. (2026). *Convertidor AC-DC Fuente 5V HLK-PM01*. https://www.tecneu.com/products/convertidor-ac-dc-fuente-5v-hlk-pm01
+13. ElectroCrea. (2026). *Módulo Micro SD*. https://electrocrea.com/products/modulo-microsd
