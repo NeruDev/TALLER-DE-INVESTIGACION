@@ -68,141 +68,119 @@ Aporta valor teórico al validar la aplicabilidad de la Ley de Faraday y el teor
 
 ## 6 Marco Teórico
 
-El desarrollo de sistemas de monitoreo eléctrico residencial basados en microcontroladores y plataformas IoT ha sido objeto de investigación creciente. A continuación, se definen las bases teóricas y el funcionamiento detallado de los componentes de este proyecto, integrando ecuaciones físicas de electromagnetismo, leyes de corriente alterna y fundamentos de procesamiento digital de señales:
+El desarrollo de sistemas de monitoreo de energía en el hogar usando microcontroladores y tecnología de Internet de las Cosas (IoT) ha ganado gran relevancia. A continuación, se explican las bases teóricas y el funcionamiento de los componentes utilizados en este proyecto, describiendo de forma clara las leyes eléctricas y el procesamiento digital de las señales:
 
-* **Microcontrolador ESP32 y Sistemas Embebidos (IoT):** La unidad central de procesamiento y conectividad del proyecto es el System-on-Chip (SoC) ESP32, desarrollado por Espressif Systems.
+* **Microcontrolador ESP32 y Sistemas Embebidos (IoT):** El cerebro del proyecto es el módulo ESP32, un microcontrolador de bajo costo y alto rendimiento desarrollado por Espressif Systems.
   
-  Su arquitectura específica es vital para este proyecto por las siguientes razones de diseño:
-  * **Procesamiento de Doble Núcleo (Xtensa® LX6 de 32 bits a 240 MHz):** El sistema operativo en tiempo real FreeRTOS se utiliza para asignar tareas concurrentes de forma separada.
+  Su estructura interna es ideal para este proyecto por las siguientes características:
+  * **Procesamiento de Doble Núcleo (Xtensa® LX6 de 32 bits a 240 MHz):** El sistema permite realizar tareas en paralelo utilizando el sistema operativo FreeRTOS.
   
-    El **Núcleo 1 (APP)** se dedica exclusivamente a tareas críticas de adquisición ininterrumpida de datos analógicos a alta velocidad (aprox. 2 kHz) y al procesamiento de señales digitales (cálculo iterativo de $I_{RMS}$, $V_{RMS}$ y potencia $P$).
+    El **Núcleo 1** se encarga exclusivamente de la tarea crítica de leer los sensores a alta velocidad (aproximadamente 2,000 veces por segundo o 2 kHz) y realizar los cálculos matemáticos para obtener el voltaje ($V_{RMS}$), la corriente ($I_{RMS}$) y la potencia ($P$).
     
-    El **Núcleo 0 (PRO)** asume la carga de gestionar la interfaz de usuario local (pantalla OLED vía protocolo I2C), el almacenamiento de historial de consumos (tarjeta microSD por SPI) y, críticamente, la conectividad inalámbrica WiFi y la pila de protocolos TCP/IP (MQTT/HTTP).
+    El **Núcleo 0** se ocupa de las tareas secundarias que requieren más tiempo y podrían retrasar las lecturas, como mostrar la información en la pantalla OLED, guardar los datos de consumo en la tarjeta microSD y enviar la información a internet por WiFi.
     
-    Esta separación de hardware garantiza que el muestreo de la red eléctrica nunca se interrumpa por retardos inherentes a la comunicación inalámbrica o almacenamiento masivo.
-  * **Restricciones del Convertidor Analógico-Digital (ADC):** El ESP32 integra dos bloques ADC de 12 bits (ADC1 y ADC2).
+    Esta división de tareas asegura que el microcontrolador nunca pierda lecturas de la corriente o el voltaje por estar ocupado transmitiendo datos o escribiendo en la memoria.
+  * **Limitaciones del Convertidor Analógico-Digital (ADC):** El ESP32 cuenta con convertidores analógico-digitales para leer voltajes variables.
   
-    Existe una limitación arquitectónica documentada por el fabricante (Espressif Systems, 2022) en la cual el bloque ADC2 no puede operar simultáneamente con el módem WiFi. Por esta razón, el diseño restringe rigurosamente los pines de sensado de corriente y voltaje al bloque ADC1 (pines GPIO 32 a 39).
+    Sin embargo, existe una restricción de diseño: el convertidor secundario (ADC2) no puede funcionar al mismo tiempo que el módulo WiFi está encendido. Por esta razón, el diseño de este prototipo conecta obligatoriamente todos los sensores al convertidor principal (ADC1), específicamente en los pines GPIO 32 a 39.
     
-    La resolución de 12 bits proporciona 4096 niveles de cuantización ($2^{12}$) sobre un rango unipolar de 0 a 3.3 V, otorgando suficiente granularidad para electrodomésticos comunes, pero introduciendo un piso de ruido de cuantización para cargas inferiores a 25 W (modo *standby*), considerándose la zona muerta del proyecto.
-* **Sensor de Corriente SCT-013-030 (Monitoreo No Intrusivo):** El funcionamiento de este sensor tipo *clamp* de núcleo partido se fundamenta en la **Ley de Faraday de la Inducción Electromagnética** y la **Ley de Ampère**:
+    El convertidor del ESP32 tiene una resolución de 12 bits, lo que significa que puede dividir el rango de 0 a 3.3 V en 4,096 niveles. Esto brinda una excelente precisión para electrodomésticos comunes, aunque para cargas muy pequeñas (menores a 25 W, como aparatos en modo de espera), el ruido eléctrico normal de la placa puede dificultar la medición, creando una pequeña "zona muerta" en esas lecturas.
+* **Sensor de Corriente SCT-013-030 (Monitoreo No Intrusivo):** Este sensor de tipo pinza se basa en el principio físico del electromagnetismo: la corriente que pasa por un cable genera un campo magnético a su alrededor.
   
-  $$\oint \mathbf{B} \cdot d\mathbf{l} = \mu_0 I_{encl}$$
+  Al cerrar la pinza del sensor sobre el cable de fase de la casa, el núcleo de ferrita recoge este campo magnético variable. Siguiendo la Ley de Inducción de Faraday, este campo variable genera una corriente eléctrica muy pequeña en un devanado secundario de 3,000 vueltas dentro del sensor:
   
-  La corriente alterna ($i_p(t)$) que circula por el cable conductor primario de la acometida genera un campo magnético variable en el núcleo de ferrita partido. Al cerrarse la pinza magnética alrededor del cable, este flujo magnético variable ($\Phi_B(t)$) se concentra en el núcleo de ferrita de alta permeabilidad magnética ($\mu_r \approx 2000$). De acuerdo con la **Ley de Faraday-Lenz**, este flujo variable induce una fuerza electromotriz ($\varepsilon$) en el devanado secundario del sensor compuesto por $N = 3000$ espiras:
+  $$i_s(t) = \frac{i_p(t)}{3000}$$
   
-  $$\varepsilon = -N \frac{d\Phi_B}{dt}$$
+  El modelo SCT-013-030 incluye en su interior una resistencia de carga de precisión de $62\,\Omega$. Esta resistencia transforma la pequeña corriente secundaria generada en un voltaje alterno que el microcontrolador puede leer, entregando una salida máxima de 1 V cuando por el cable principal circulan 30 A.
   
-  Como consecuencia de esta inducción magnética, se establece una corriente secundaria proporcional:
+  Dado que el ESP32 solo puede medir voltajes positivos de 0 a 3.3 V, y la señal del sensor oscila entre valores positivos y negativos, se añade un circuito simple con dos resistencias de $10\text{ k}\Omega$ para sumar un voltaje de offset de 1.65 V. De esta manera, la señal se desplaza hacia la zona positiva y oscila de forma segura para ser leída por el microcontrolador.
+* **Sensor de Voltaje ZMPT101B y Aislamiento Eléctrico:** Este componente es un pequeño transformador de voltaje de alta precisión que sirve para leer de forma directa la señal de la red eléctrica de 127 V AC de manera segura. El sensor ofrece un aislamiento completo que protege al microcontrolador de posibles sobrevoltajes.
   
-  $$i_s(t) = \frac{i_p(t)}{N}$$
+  Medir el voltaje real en tiempo real es fundamental en este proyecto. En lugar de asumir un voltaje fijo de 127 V (lo que provocaría errores en el cálculo del consumo debido a las variaciones habituales en la red de CFE), el sensor permite capturar las variaciones instantáneas del suministro eléctrico.
   
-  El submodelo "030" integra una resistencia de carga interna (*burden resistor*) de $62\,\Omega$ de alta precisión, la cual convierte la corriente secundaria inducida en una tensión alterna proporcional, entregando directamente una salida máxima nominal de $1\text{ V}$ RMS a $30\text{ A}$ de corriente primaria.
-  
-  Dado que el ADC del ESP32 no soporta voltajes negativos, se implementa un circuito de acondicionamiento físico con un divisor de tensión resistivo (dos resistores de precisión de $10\text{ k}\Omega$) para inyectar un *offset* DC de $1.65\text{ V}$. Esto permite que la señal oscile de manera segura y unipolar en el ADC de 0 V a 3.3 V.
-* **Sensor de Voltaje ZMPT101B y Aislamiento Galvánico:** Este componente incorpora un transformador miniatura de voltaje de alta precisión que provee un aislamiento galvánico de alta seguridad (típicamente calificado hasta 4,000 V de tensión de aislamiento) para la lectura directa de la red eléctrica de 127 V AC.
-  
-  A diferencia de métodos simplificados que asumen un voltaje teórico nominal constante de 127 V (lo que induce a errores metrológicos debido a fluctuaciones y armónicos), medir esta variable instantánea real permite contabilizar fidedignamente los armónicos, detectar caídas de tensión (*sags*), y proteger los cálculos de consumo frente a las variaciones comunes en la red eléctrica de CFE.
-  
-  Para asegurar total seguridad del microcontrolador sin requerir divisores de tensión analógicos externos que distorsionen la señal, el módulo se alimenta directamente a 3.3 V DC, de forma que su amplificador operacional integrado (LM358) entrega un offset analógico automático de exactamente 1.65 V (VCC/2), permitiendo que la onda de tensión alterna reducida oscile de forma segura y unipolar dentro del rango tolerable del pin analógico GPIO 33 (ADC1) del ESP32.
-* **Teoría de Potencia en Corriente Alterna y Cargas No Lineales:** La potencia eléctrica instantánea en una red de corriente alterna se define como el producto del voltaje instantáneo y la corriente instantánea:
+  El módulo ZMPT101B se alimenta con 3.3 V DC, por lo que su circuito integrado (LM358) ajusta de manera automática la onda de voltaje para que quede centrada en 1.65 V, permitiendo que oscile de forma segura dentro del rango del pin analógico GPIO 33 del ESP32 sin necesidad de componentes externos.
+* **Teoría de Potencia en Corriente Alterna y Cargas del Hogar:** En corriente alterna, la potencia de un aparato varía a cada instante según el voltaje y la corriente en ese momento:
   
   $$p(t) = v(t) \cdot i(t)$$
   
-  En un sistema donde la carga es puramente resistiva y lineal, las ondas de corriente y voltaje están perfectamente en fase, por lo que toda la energía suministrada se transforma en trabajo útil. Sin embargo, en el entorno residencial real, los electrodomésticos incorporan componentes reactivos (motores, compresores de refrigeración) y no lineales (fuentes conmutadas de computadoras y lámparas LED). 
+  En aparatos puramente resistivos (como focos incandescentes o planchas), las ondas de voltaje y corriente van de la mano, por lo que toda la energía se aprovecha por completo. Sin embargo, muchos electrodomésticos comunes tienen motores (como refrigeradores o lavadoras) o fuentes electrónicas (como computadoras y pantallas) que desfasan estas ondas entre sí.
   
-  La presencia de reactancia inductiva produce un desfase angular ($\theta$) entre las señales sinusoidales de voltaje y corriente. La **potencia activa ($P$ en Watts)** representa el promedio temporal de la potencia instantánea sobre un período completo $T$:
+  Esto da lugar a diferentes tipos de potencia:
+  * **Potencia Activa ($P$ en Watts):** Es la energía real que consumen los aparatos para realizar un trabajo útil (generar luz, calor o movimiento).
+  * **Potencia Aparente ($S$ en Volt-Amperios):** Es la potencia total que la compañía eléctrica debe entregar al hogar para que los aparatos funcionen.
+  * **Potencia Reactiva ($Q$ en Volt-Amperios Reactivos):** Es la energía que oscila de ida y vuelta en los motores para crear sus campos magnéticos, sin realizar un trabajo útil directo.
+  * **Factor de Potencia ($FP$):** Es la relación entre la potencia útil (activa) y la potencia total (aparente). Su valor va de 0 a 1.00:
+    
+    $$FP = \frac{P}{S}$$
+    
+    Un factor de potencia cercano a 1.00 indica un excelente aprovechamiento de la energía, mientras que un factor bajo indica pérdidas por desfase o ruidos en la red (armónicos). El prototipo calcula la potencia activa real mediante la multiplicación rápida y continua de las muestras de voltaje y corriente tomadas por el programa, garantizando un registro preciso del consumo del hogar.
+* **Muestreo de Datos y Procesamiento Digital:** Para que el microcontrolador pueda medir de forma correcta una señal de corriente alterna de 60 Hz y sus variaciones rápidas, se debe cumplir el teorema de Nyquist. Este teorema indica que la velocidad de lectura (muestreo) debe ser al menos del doble de la frecuencia más alta que queramos capturar.
   
-  $$P = \frac{1}{T} \int_0^T v(t) \cdot i(t) \, dt$$
+  En el programa del ESP32, se configura el Núcleo 1 para leer los sensores a una velocidad de aproximadamente 2,000 muestras por segundo (2 kHz). A cada muestra digital de voltaje ($v[n]$) y corriente ($i[n]$) se le resta digitalmente el offset de 1.65 V para centrarla en cero, y luego se aplican las fórmulas promedio sobre un grupo de 2,000 muestras (que equivalen a varios ciclos de la red eléctrica):
   
-  La **potencia aparente ($S$ en Volt-Amperios)** representa la capacidad máxima teórica del sistema, definida como el producto de los valores eficaces de voltaje y corriente:
-  
-  $$S = V_{RMS} \cdot I_{RMS}$$
-  
-  La **potencia reactiva ($Q$ en Volt-Amperios Reactivos)** es la potencia que oscila de ida y vuelta entre la fuente y los campos magnéticos/eléctricos de la carga:
-  
-  $$Q = V_{RMS} \cdot I_{RMS} \sin\theta$$
-  
-  El **Factor de Potencia ($FP$)** es la relación entre la potencia activa y la potencia aparente:
-  
-  $$FP = \frac{P}{S} = \cos\theta$$
-  
-  En presencia de cargas no lineales modernas, las corrientes no son senoidales perfectas, introduciendo distorsión armónica total (THD). El factor de potencia total se descompone entonces en un factor de desplazamiento ($\cos\theta$) y un factor de distorsión debido a los armónicos de corriente:
-  
-  $$FP_{total} = \frac{I_{1,RMS}}{I_{RMS}} \cos\theta$$
-  
-  Donde $I_{1,RMS}$ es la corriente eficaz en la frecuencia fundamental de 60 Hz e $I_{RMS}$ es la corriente eficaz total. Este proyecto resuelve la medición de potencia activa real en presencia de distorsión mediante el procesamiento síncrono digital instantáneo de las muestras de tensión y corriente en bucle cerrado, igualando la precisión metrológica exigida por CFE.
-* **Muestreo Discreto y Procesamiento Digital de Señales (DSP):** De acuerdo con el **Teorema de Muestreo de Nyquist-Shannon**, para reconstruir fidedignamente una señal analógica continua de frecuencia máxima $f_{max}$ sin efecto de aliasing (*solapamiento*), la frecuencia de muestreo discreto ($f_s$) debe satisfacer la condición:
-  
-  $$f_s \geq 2 f_{max}$$
-  
-  En la red eléctrica monofásica de 60 Hz en México, la presencia de cargas conmutadas genera armónicos de hasta el 15º orden ($f_{15} = 900\text{ Hz}$). Por tanto, se requiere una frecuencia de muestreo superior a 1.8 kHz. 
-  
-  El firmware implementado en el ESP32 ejecuta una rutina iterativa de adquisición analógica en el Núcleo 1 que muestrea las señales a $f_s \approx 2\text{ kHz}$. El algoritmo en tiempo real neutraliza el *offset* de 1.65 V de cada muestra digitalizada y calcula las siguientes métricas estadísticas sobre un intervalo cerrado de $N$ muestras (aproximadamente 2000 muestras equivalentes a varios ciclos completos de red):
-  
-  * **Voltaje Eficaz Discreto ($V_{RMS}$):**
+  * **Voltaje Eficaz ($V_{RMS}$):**
     $$V_{RMS} = \sqrt{\frac{1}{N} \sum_{n=0}^{N-1} (v[n] - V_{offset})^2}$$
   
-  * **Corriente Eficaz Discreta ($I_{RMS}$):**
+  * **Corriente Eficaz ($I_{RMS}$):**
     $$I_{RMS} = \sqrt{\frac{1}{N} \sum_{n=0}^{N-1} (i[n] - I_{offset})^2}$$
   
-  * **Potencia Activa Discreta ($P$):**
+  * **Potencia Activa ($P$):**
     $$P = \frac{1}{N} \sum_{n=0}^{N-1} (v[n] - V_{offset}) \cdot (i[n] - I_{offset})$$
   
-  Esta aproximación de procesamiento discreto en el firmware permite calcular el verdadero valor eficaz y la potencia activa real bajo condiciones arbitrarias de distorsión y factor de potencia, superando significativamente las aproximaciones tradicionales de voltaje nominal constante.
-* **Fuentes de Alimentación Conmutadas (SMPS) y Normatividad:** Se empleará un convertidor AC/DC tipo *buck* de alta frecuencia (Hi-Link) para bajar la tensión de 127 V AC a 5 V DC, proporcionando eficiencia energética (>70%) en un formato integrado.
+  Este método permite calcular el consumo real de cualquier aparato eléctrico en el hogar, superando por mucho los métodos sencillos que asumen un voltaje de red constante.
+* **Fuentes de Alimentación y Normas Eléctricas:** Para alimentar el prototipo de forma segura, se utiliza una pequeña fuente conmutada comercial (Hi-Link) que reduce el voltaje de la casa (127 V AC) a un nivel seguro de 5 V DC con alta eficiencia.
   
-  Todo el ensamble respetará las pautas de instalación de la **NOM-001-SEDE-2012**, operando exclusivamente como un prototipo educativo de autodiagnóstico no intrusivo, desprovisto de valor fiscal o legal ante dependencias federales.
-* **Protocolos de Comunicación y Conectividad IoT (I2C, SPI y MQTT):** La interacción armoniosa del ESP32 con sus periféricos locales y la nube requiere de buses y protocolos de red altamente optimizados.
+  El diseño e instalación del prototipo se realiza de forma no intrusivo y con fines educativos, respetando las pautas básicas de seguridad de la norma oficial mexicana **NOM-001-SEDE-2012** para asegurar que sea seguro de usar en el hogar.
+* **Protocolos de Comunicación (I2C, SPI y MQTT):** Para que el ESP32 pueda controlar la pantalla, guardar la información y enviar los datos a internet, se utilizan los siguientes estándares:
   
-  * **Bus I2C (Inter-Integrated Circuit):** Desarrollado por NXP Semiconductors (2021) bajo la especificación de referencia, es un estándar síncrono que utiliza dos líneas bidireccionales con resistencias *pull-up*: SDA (datos) y SCL (reloj). El firmware del ESP32 implementa este protocolo en la interfaz con la pantalla OLED SSD1306, operando con direccionamiento de 7 bits a una velocidad máxima de 400 kHz (Fast-mode). La principal ventaja es el ahorro drástico de pines físicos, requiriendo solo dos pines GPIO para gestionar el display de visualización instantánea.
-  * **Bus SPI (Serial Peripheral Interface):** Diseñado originalmente por Motorola, Inc. (2003), es un protocolo de comunicación serial síncrono de cuatro hilos: MOSI (Master Out Slave In), MISO (Master In Slave Out), SCK (Serial Clock) y CS (Chip Select). A diferencia de I2C, SPI opera en modo dúplex completo a velocidades que superan los 10 MHz en este desarrollo, permitiendo al ESP32 escribir los registros de consumo eléctrico masivo en la tarjeta microSD de forma extremadamente ágil, reduciendo a microsegundos el retardo de escritura e impidiendo bloqueos del lazo de muestreo del ADC en el núcleo activo.
-  * **Protocolo MQTT (Message Queuing Telemetry Transport):** Estandarizado oficialmente por OASIS (2019), es un protocolo de comunicación de capa de aplicación basado en el modelo asíncrono publicador/suscriptor. MQTT está diseñado sobre la pila de protocolos TCP/IP (puerto 1883 por defecto) y es sumamente óptimo para sistemas embebidos de monitoreo debido a su encabezado ultraligero de tan solo 2 bytes en su paquete básico, reduciendo de manera radical el ancho de banda y la sobrecarga de procesamiento respecto al protocolo HTTP tradicional. En el prototipo, el ESP32 se comporta como un *Cliente Publicador*, estructurando las lecturas procesadas de potencia en tópicos jerárquicos estructurados (ej. `casa/monitoreo/potencia_activa`), y transmitiéndolas de manera asíncrona hacia un Broker local o en la nube (ej. Mosquitto), lo que permite que una aplicación web o móvil consuma los datos históricos en tiempo real con una latencia inferior a los 100 ms y con niveles definidos de Calidad de Servicio (QoS 0 para telemetría básica de alta velocidad y QoS 1 para asegurar la entrega de datos críticos de consumo acumulado).
+  * **Bus I2C:** Es un protocolo sencillo que utiliza solo dos cables de comunicación (datos y reloj) para enviar las lecturas instantáneas a la pantalla OLED SSD1306, lo que permite ahorrar pines del microcontrolador.
+  * **Bus SPI:** Es un protocolo de comunicación muy rápido que utiliza 4 hilos para guardar las lecturas en la tarjeta microSD casi al instante. Su alta velocidad evita que el programa principal se retrase al escribir en la tarjeta.
+  * **Protocolo MQTT:** Es un estándar de comunicación rápido y ligero diseñado para internet de las cosas. Funciona mediante un modelo de "publicación y suscripción", donde el ESP32 envía los datos de consumo organizados en temas (por ejemplo, `casa/monitoreo/potencia`) hacia un servidor central (Broker). Al usar cabeceras de mensaje extremadamente pequeñas (de apenas 2 bytes), consume muy poco ancho de banda de internet y permite ver el consumo en tiempo real en una aplicación móvil o web con una respuesta casi instantánea.
+
 
 ## 7 Hipótesis
 
-En el marco de la ingeniería de diseño con prototipos, las hipótesis de este estudio conectan de forma explícita las variables de **desempeño metrológico** ($I_{RMS}$, $V_{RMS}$, $P$, MAPE, $R^2$), las variables de **viabilidad económica** (costo de la BOM) y las condiciones de operación de la red eléctrica.
+En el diseño y validación del prototipo, las hipótesis planteadas buscan relacionar el rendimiento de la medición (errores y precisión) con el bajo costo de los componentes y las características de la instalación eléctrica.
 
-* **Hipótesis general (de investigación - $H_i$):** Es factible desarrollar un sistema de monitoreo eléctrico residencial basado en IoT que, mediante el uso de hardware de código abierto y componentes genéricos optimizados (ESP32, SCT-013, ZMPT101B), reduzca los costos de manufactura por debajo de los \$600.00 MXN por unidad, manteniendo un error de medición de potencia activa inferior al 5% en cargas domésticas estándar superiores a 25 W.
+* **Hipótesis general (de investigación - $H_i$):** Es viable diseñar y construir un prototipo de monitoreo eléctrico para el hogar que sea de bajo costo (con un presupuesto de materiales menor a \$600.00 MXN) y que mida la potencia activa con un error promedio menor al 5% en aparatos con consumos mayores a 25 W, al ser comparado con un multímetro de referencia.
   
-  Esta hipótesis establece un umbral numérico que permite la validación rigurosa mediante un multímetro patrón.
-* **Hipótesis nula ($H_0$):** El sistema propuesto no alcanza la precisión requerida (presentando un error porcentual sostenido $> 5\%$) o su costo de manufactura excede irremediablemente los \$600.00 MXN por unidad, invalidando la viabilidad técnico-económica de la propuesta.
-* **Hipótesis alternativa ($H_1$):** El sistema propuesto logra un costo de manufactura ≤ \$600.00 MXN por unidad y alcanza un error porcentual de potencia activa ≤ 5% en cargas domésticas superiores a 25 W.
-* **Hipótesis específicas (Operacionales):**
-  * **Linealidad del sensado de corriente:** El sensor SCT-013-030 acondicionado analógicamente con un *offset* DC de 1.65 V mantendrá una relación estrictamente lineal con la corriente eficaz real de la carga, esperando un coeficiente de determinación $R^2 > 0.98$ en el rango de 0.5 A a 30 A.
-  * **Estabilidad de la fuente de alimentación:** La fuente integrada conmutada tipo Hi-Link presentará un rizado de tensión menor a 50 mVpp, garantizando que no introducirá ruido paramétrico de alta frecuencia que desestabilice el piso de cuantización del ADC del ESP32.
-  * **Cálculo de potencia activa real:** La medición síncrona de las magnitudes instantáneas $v[n]$ e $i[n]$ en bucle cerrado permitirá procesar la potencia $P$ con una exactitud estadísticamente superior a los modelos básicos (que asumen un voltaje nominal constante de 127 V).
-  * **Viabilidad económica:** La Lista de Materiales completa (BOM) no superará los \$600.00 MXN, materializando una reducción de costo de al menos el 60% frente a analizadores de espectro comerciales.
-
+  Esta hipótesis define las metas numéricas de costo y precisión para comprobar el éxito del prototipo.
+* **Hipótesis nula ($H_0$):** El prototipo no alcanza la precisión deseada (el error promedio es mayor al 5%) o su costo total de materiales supera los \$600.00 MXN, por lo que el proyecto no resulta viable.
+* **Hipótesis alternativa ($H_1$):** El prototipo tiene un costo de materiales menor o igual a \$600.00 MXN y registra un error de medición promedio menor o igual al 5% para cargas mayores a 25 W.
+* **Hipótesis específicas:**
+  * **Linealidad del sensor de corriente:** La señal entregada por el sensor SCT-013 y adaptada para el microcontrolador mantendrá una relación lineal y directa con la corriente real medida por el multímetro patrón, obteniendo un coeficiente de correlación $R^2 > 0.98$ en el rango de 0.5 A a 30 A.
+  * **Estabilidad de la alimentación:** La fuente compacta Hi-Link integrada suministrará un voltaje continuo estable (con variaciones menores a 50 mV) para evitar que el ruido eléctrico distorsione las lecturas analógicas del microcontrolador.
+  * **Cálculo de potencia en tiempo real:** Medir de manera simultánea las muestras rápidas de voltaje y corriente en tiempo real permitirá calcular una potencia activa más exacta que si se asumiera un voltaje fijo de 127 V.
+  * **Costo accesible:** El costo total de la lista de materiales (BOM) se mantendrá por debajo de los \$600.00 MXN, logrando un ahorro de más del 60% en comparación con los medidores comerciales.
 ## 8 Diseño metodológico
 
-El bosquejo del método está diseñado para asegurar tanto la **validez interna** (en pruebas controladas de calibración) como la **validez externa** (operación real en campo), asegurando trazabilidad y repetibilidad.
+El método de trabajo está estructurado para garantizar que las mediciones sean exactas y repetibles, validando el dispositivo tanto en pruebas de laboratorio como en condiciones reales en el hogar.
 
 ### 8.1 Universo (Población de estudio)
-En el contexto de un estudio experimental con prototipos de hardware, el universo no está constituido por sujetos humanos, sino por el conjunto de **todas las posibles condiciones de carga eléctrica de medición** que pueden presentarse en una vivienda residencial monofásica, dentro del rango físico de operación del sensor (0 a 30 A).
+En este proyecto técnico, el universo de estudio no consiste en personas, sino en las **diferentes condiciones de consumo eléctrico** que se presentan en una instalación monofásica residencial dentro del rango de operación del sensor (de 0 A a 30 A).
 
-El entorno futuro de validación de campo será una vivienda unifamiliar con servicio monofásico (127 V, 60 Hz) ubicada en Tenango del Valle, Estado de México.
+Las pruebas finales de campo se realizarán en una vivienda típica con servicio monofásico de CFE (127 V, 60 Hz) ubicada en Tenango del Valle, Estado de México.
 
 ### 8.2 Tamaño de la muestra
-Se establecerán **270 pares de observaciones** (prototipo frente a instrumento patrón) distribuidas en 9 niveles de carga discretos (0.5 A, 1 A, 2 A, 5 A, 10 A, 15 A, 20 A, 25 A y 30 A) con un mínimo de 30 repeticiones por cada nivel.
+Para validar el prototipo, se tomarán **270 lecturas comparativas** entre el prototipo y un instrumento de referencia (multímetro patrón). Estas lecturas se dividirán en 9 niveles de corriente diferentes (0.5 A, 1 A, 2 A, 5 A, 10 A, 15 A, 20 A, 25 A y 30 A), registrando 30 muestras en cada nivel para asegurar que el sensor funcione bien en todo su rango.
 
-El muestreo será **no probabilístico intencional**, asegurando meticulosamente la cobertura del rango dinámico completo del dispositivo.
-* **Criterios de inclusión:** Cargas resistivas puras (lámparas incandescentes, planchas) y cargas inductivas comunes (motores fraccionarios, ventiladores), conectadas a la red monofásica de 127 V/60 Hz.
-* **Criterios de exclusión:** Cargas que demanden una corriente inferior a 0.2 A (situadas en la zona muerta de umbral de ruido del ADC), infraestructura trifásica, y equipos que generen distorsión armónica extrema (variadores de frecuencia industriales).
+La selección de las pruebas se realizará de forma dirigida para cubrir la mayor cantidad posible de aparatos de uso común:
+* **Criterios de inclusión:** Aparatos resistivos puros (como focos, planchas o calentadores) y aparatos inductivos comunes (como ventiladores, licuadoras o motores pequeños) conectados a la red de 127 V.
+* **Criterios de exclusión:** Consumos extremadamente bajos por debajo de 0.2 A (que caen en la zona de ruido del sensor), instalaciones de tipo trifásico y aparatos industriales especiales.
 
 ### 8.3 Tipos de investigación a realizar
-* **Finalidad:** *Aplicada y Tecnológica* (transforma la teoría de procesamiento de señales en un prototipo tangible).
-* **Enfoque:** *Cuantitativo* (el éxito depende de magnitudes numéricas verificables como $I_{RMS}$, $V_{RMS}$, $P$, y reducción de costos).
-* **Alcance:** *Correlacional y Explicativo* (se analizará la correlación directa entre el instrumento patrón y el prototipo, explicando variables de desviación estadística).
-* **Lugar:** Diseño *Mixto*, comenzando con una rigurosa fase experimental en el entorno aislado de un **laboratorio**, seguida de validaciones observacionales en **campo** (vivienda real).
+* **Finalidad:** *Aplicada y Tecnológica* (utiliza principios teóricos de electricidad y programación para construir un prototipo real).
+* **Enfoque:** *Cuantitativo* (el éxito se mide con datos numéricos de precisión, voltios, amperios y costos).
+* **Alcance:** *Correlacional* (compara directamente las mediciones del prototipo contra el multímetro de referencia para analizar sus diferencias).
+* **Lugar:** *Mixto*, iniciando con pruebas controladas en un **laboratorio** escolar y finalizando con mediciones de campo en un **hogar** real.
 
 ### 8.4 Tipo de instrumento a utilizar para la recolección de la información
-El instrumento tecnológico de medición principal (DUT, *Device Under Test*) bajo validación experimental será el **Prototipo SME-IoT** configurado con el microcontrolador ESP32 y los transductores analógicos SCT-013-030 (corriente) y ZMPT101B (voltaje).
+El dispositivo bajo prueba es el **Prototipo SME-IoT**, que integra el ESP32 y los sensores SCT-013 y ZMPT101B.
 
-Para la validación de su desempeño metrológico y exactitud se utilizará un **Multímetro Industrial de Verdadero Valor Eficaz Fluke 87V (Instrumento Patrón)** como dispositivo de referencia. El Fluke 87V posee una pantalla de 20,000 cuentas de alta resolución y cuenta con una exactitud básica garantizada en corriente alterna (tensión de verdadero valor eficaz) de $\pm (0.7\% + 2)$ en lecturas de 50 Hz a 5 kHz, y de $\pm (1.0\% + 2)$ en mediciones de corriente AC de verdadero valor eficaz (Fluke Corporation, 2020). Este instrumento patrón cuenta con un certificado de calibración vigente trazable ante el Centro Nacional de Metrología (CENAM) o laboratorios acreditados por la Entidad Mexicana de Acreditación (EMA) bajo el estándar internacional **ISO/IEC 17025:2017**, garantizando la cadena de trazabilidad del experimento.
+Para validar que las lecturas sean precisas, se utilizará un **Multímetro Industrial Fluke 87V (Instrumento Patrón)** como equipo de referencia. Este multímetro profesional de alta resolución tiene una precisión certificada del $\pm 0.7\%$ para lecturas de voltaje y de $\pm 1.0\%$ para corriente (Fluke Corporation, 2020). Además, cuenta con un certificado de calibración vigente de un laboratorio acreditado bajo la norma internacional **ISO/IEC 17025:2017**, garantizando la total confiabilidad de las pruebas.
 
 #### 8.4.1 Cadena de Trazabilidad Metrológica
-La validez metrológica de las mediciones del prototipo reside en su cadena de trazabilidad ininterrumpida hacia los patrones nacionales del CENAM en México. A continuación, se detalla la pirámide de trazabilidad establecida para este protocolo de investigación:
+La confianza de las mediciones del prototipo se basa en una cadena de comparación que llega hasta los patrones nacionales de medición en México. A continuación, se muestra el camino de calibración establecido:
 
 ```mermaid
 graph TD
@@ -210,68 +188,69 @@ graph TD
     B --> C["Instrumento Patrón de Trabajo: Multímetro Fluke 87V (True-RMS)<br>Exactitud CA Voltaje: ±0.7% + 2 dig, Corriente: ±1.0% + 2 dig"]
     C --> D["Dispositivo Bajo Prueba (DUT): Prototipo SME-IoT (ESP32)<br>Algoritmo DSP calibrado bajo condiciones controladas (23 °C ± 5 °C)"]
 ```
+<center>Figura 8.1. Cadena de trazabilidad metrológica del prototipo</center>
 
-1. **Patrón Nacional de Tensión y Corriente (CENAM):** Representa el eslabón metrológico de mayor jerarquía en la República Mexicana. Custodia y mantiene los patrones de referencia de la magnitud del voltio y el amperio AC con la menor incertidumbre del país.
-2. **Patrón de Referencia del Laboratorio Secundario Acreditado:** Laboratorio metrológico externo acreditado por la EMA que calibra de forma periódica el instrumento de trabajo contra sus patrones de transferencia de alta exactitud.
-3. **Instrumento Patrón de Trabajo (Fluke 87V):** Utilizado de forma directa en el banco de pruebas para certificar la calibración del prototipo. El instrumento patrón cuenta con un filtro paso bajo integrado seleccionable que atenúa frecuencias espurias superiores a 1 kHz, eliminando ruidos externos de alta frecuencia que puedan falsear la calibración de la componente fundamental de 60 Hz.
-4. **Prototipo SME-IoT (Dispositivo Bajo Prueba):** Calibrado mediante un método estadístico de regresión y ajuste de factores de escala en un ambiente de laboratorio controlado (temperatura de 23 °C $\pm 5$ °C y humedad relativa inferior al 80%), garantizando que las mediciones residenciales posteriores mantengan una incertidumbre expandida conocida.
+1. **Patrón Nacional (CENAM):** Es la máxima autoridad de medición en México, encargada de mantener los patrones más precisos de voltaje y corriente en el país.
+2. **Laboratorio Secundario Acreditado:** Laboratorio externo certificado por la Entidad Mexicana de Acreditación (EMA) que calibra el multímetro Fluke contra sus patrones de alta precisión de forma periódica.
+3. **Instrumento Patrón (Fluke 87V):** Es el multímetro que usamos directamente en la mesa de pruebas para verificar que el prototipo mida de forma correcta. Su filtro integrado elimina ruidos externos para no falsear las pruebas.
+4. **Prototipo SME-IoT (Dispositivo bajo prueba):** Se ajusta mediante el programa del ESP32 en un ambiente controlado (temperatura de 23 °C $\pm 5$ °C) para asegurar que las mediciones posteriores en la casa sean exactas.
 
-La recolección de datos aplicará la observación estructurada sistemática y automatizada. Las lecturas instantáneas y procesadas de voltaje ($V_{RMS}$), corriente ($I_{RMS}$), potencia activa ($P$), potencia aparente ($S$) y factor de potencia ($FP$) obtenidas por el Prototipo SME-IoT se registrarán en una **tarjeta microSD** (clase 10 mediante bus SPI) de forma de archivo plano delimitado por comas (.CSV) de manera persistente. Cada muestra contará con una estampa de tiempo analógica proporcionada por un módulo de reloj de tiempo real RTC de alta precisión (DS3231) para asegurar su ordenamiento cronológico unívoco.
+Para registrar los datos de manera automática y ordenada, el prototipo guardará los valores de voltaje ($V_{RMS}$), corriente ($I_{RMS}$), potencia activa ($P$), potencia aparente ($S$) y factor de potencia ($FP$) en un archivo de texto plano delimitado por comas (`.CSV`) dentro de una **tarjeta microSD** conectada por bus SPI. Cada registro incluirá la fecha y hora exacta gracias a un módulo de reloj de tiempo real (RTC DS3231) incorporado.
 
-### 8.5 Procesamiento y Análisis de Datos Estadísticos y Calibración
-Los datos recopilados en laboratorio y campo serán procesados y analizados utilizando herramientas computacionales avanzadas como Python (bibliotecas Pandas, NumPy y SciPy) y Microsoft Excel. 
+### 8.5 Procesamiento y Análisis de Datos (Calibración)
+Las mediciones obtenidas se procesarán utilizando herramientas sencillas en hojas de cálculo (Microsoft Excel) o mediante pequeños programas en Python (con las bibliotecas Pandas y NumPy).
 
-Para comprobar las hipótesis operacionales y la viabilidad metrológica del prototipo frente al instrumento patrón de referencia, se estructurará el análisis en tres fases estadísticas y algebraicas:
+El análisis para comprobar el correcto funcionamiento del dispositivo se dividirá en las siguientes fases:
 
-#### 8.5.1 Algoritmo de Calibración Teórica y Ajuste de Coeficientes
-El firmware del ESP32 utiliza constantes multiplicativas para convertir las lecturas de los canales analógicos del ADC1 en valores de voltaje y corriente físicos. Previo a las pruebas experimentales, el prototipo se someterá a una fase de calibración empírica en banco de pruebas con cargas resistivas puras estables de referencia. Los coeficientes se calculan de la siguiente manera:
+#### 8.5.1 Fórmulas de Calibración y Ajuste de Coeficientes
+El programa del ESP32 utiliza constantes multiplicadoras para convertir las lecturas analógicas del sensor a valores físicos reales de voltaje y corriente. Antes del experimento, el prototipo se calibra con cargas conocidas y estables:
 
-* **Coeficiente de Calibración de Voltaje ($V_{CAL}$):**
-  $$V_{CAL} = \frac{V_{Patron\_RMS}}{V_{Prototipo\_Crudo}}$$
-  Donde $V_{Patron\_RMS}$ es la tensión eficaz medida por el multímetro de referencia y $V_{Prototipo\_Crudo}$ es el valor eficaz discretizado en el ADC sin factor de escala.
-* **Coeficiente de Calibración de Corriente ($I_{CAL}$):**
-  $$I_{CAL} = \frac{I_{Patron\_RMS}}{I_{Prototipo\_Crudo}}$$
-* **Ajuste de Calibración de Desfase de Fase ($Phase_{CAL}$):**
-  Los sensores inductivos (SCT-013 y ZMPT101B) introducen un retardo de fase diferencial sistemático que causa un desplazamiento angular ficticio entre la corriente y el voltaje, alterando drásticamente el cálculo de la potencia activa y el factor de potencia. Para solucionar este problema en el procesamiento de señales digitales del ESP32, el firmware implementa una interpolación lineal para aproximar el valor desplazado del voltaje:
+* **Calibración de Voltaje ($V_{CAL}$):**
+  $$V_{CAL} = \frac{V_{Real}}{V_{Crudo\_ESP}}$$
+  Donde $V_{Real}$ es el voltaje del multímetro Fluke y $V_{Crudo\_ESP}$ es la lectura directa sin calibrar del microcontrolador.
+* **Calibración de Corriente ($I_{CAL}$):**
+  $$I_{CAL} = \frac{I_{Real}}{I_{Crudo\_ESP}}$$
+* **Ajuste de Desfase de Fase ($Phase_{CAL}$):**
+  Los sensores magnéticos introducen por su naturaleza un pequeño retraso entre la onda de voltaje y de corriente, lo que afecta el cálculo de la potencia activa. Para corregir este retraso, el programa del ESP32 realiza un ajuste por software para alinear de nuevo ambas ondas:
   $$v_{corregido}[n] = v[n] + Phase_{CAL} \cdot (v[n] - v[n-1])$$
-  El coeficiente $Phase_{CAL}$ se calibra conectando una carga puramente resistiva ($\cos\theta = 1.00$) y ajustando iterativamente el parámetro hasta que la potencia activa ($P$) calculada iguale matemáticamente a la potencia aparente ($S$), anulando el error por desfase angular en el firmware.
+  Este coeficiente se calibra conectando una carga resistiva pura (como una plancha, donde el desfase real es cero) y ajustando el valor de $Phase_{CAL}$ hasta que el factor de potencia calculado en la pantalla sea exactamente de 1.00.
 
-#### 8.5.2 Análisis Metrológico y Validación de Hipótesis
-Una vez calibrado el sistema, se aplicarán las siguientes técnicas estadísticas para determinar la veracidad y concordancia del prototipo:
-* **Estadística Descriptiva Paramétrica:** Cálculo de medias aritméticas, desviaciones estándar e intervalos de confianza del 95% para cada nivel de corriente experimental.
-* **Regresión Lineal Simple y Análisis de Varianza (ANOVA):** Ajuste de curvas de calibración para evaluar la linealidad y el coeficiente de determinación ($R^2$), requiriendo que $R^2 > 0.98$ para validar la linealidad operacional en el rango de 0.5 A a 30 A.
-* **Métrica de Exactitud Metrológica (MAPE):** El criterio de éxito metrológico se evaluará mediante el **Error Porcentual Absoluto Medio (MAPE)**:
+#### 8.5.2 Análisis de Precisión y Linealidad
+Una vez calibrado el sistema, se evaluará la calidad de las mediciones mediante las siguientes técnicas:
+* **Estadística Descriptiva:** Cálculo de promedios, desviaciones de las lecturas e intervalos de confianza para cada nivel de corriente probado.
+* **Regresión Lineal:** Ajuste de curvas de calibración para comprobar que el sensor de corriente sea lineal en todo su rango de 0.5 A a 30 A, buscando un coeficiente de determinación $R^2 > 0.98$.
+* **Métrica de Error (MAPE):** El error promedio se calculará mediante el **Error Porcentual Absoluto Medio (MAPE)**:
   $$MAPE = \frac{100\%}{M} \sum_{m=1}^{M} \left| \frac{X_{Patron,m} - X_{Prototipo,m}}{X_{Patron,m}} \right|$$
-  Donde $M$ es la cantidad de repeticiones y $X$ representa la variable de potencia activa real. Se validará la hipótesis de investigación ($H_i$) si el MAPE obtenido es inferior al 5% en cargas superiores a 25 W.
-* **Prueba de Concordancia Metrológica de Bland-Altman:** Se graficarán las diferencias entre ambos métodos contra su media promedio para cuantificar el sesgo sistemático medio y los límites de concordancia ($\pm 1.96$ desviaciones estándar). Adicionalmente, se comprobará la normalidad de las diferencias con la prueba de **Shapiro-Wilk** y se ejecutará una **prueba t de Student pareada** (con nivel de significancia $\alpha = 0.05$) para verificar si existe una diferencia estadísticamente significativa entre las mediciones del prototipo y el instrumento patrón, garantizando concordancia académica de nivel internacional.
+  Donde $M$ es el número de muestras y $X$ representa la potencia medida. Se considerará exitoso si el error promedio es menor al 5% en consumos superiores a 25 W.
+* **Validación de Medios:** Se realizará una comparación directa entre los promedios del prototipo y del multímetro para certificar que las diferencias observadas caigan dentro de límites aceptables y no representen un error sistemático grave en las lecturas.
 
-#### 8.5.3 Procedimiento Metrológico de Ejecución y Adquisición Experimental
-Para garantizar la validez metodológica y la repetibilidad del experimento, el proceso de calibración y recolección de observaciones se estructurará rigurosamente en una rutina secuencial detallada a continuación:
+#### 8.5.3 Procedimiento de Pruebas Paso a Paso
+Para asegurar que las pruebas puedan repetirse bajo las mismas condiciones, se seguirá detalladamente esta rutina de laboratorio:
 
-1. **Fase de Aclimatación y Estabilización Térmica:**
-   * El prototipo SME-IoT y el multímetro Fluke 87V se conectarán en el banco de pruebas de laboratorio bajo condiciones ambientales controladas de 23 °C $\pm 5$ °C.
-   * Se mantendrán energizados en vacío (sin carga de corriente primaria) durante un periodo de **15 minutos**. Este paso es crítico para estabilizar las derivas de temperatura internas de las resistencias divisoras de precisión y anular el desplazamiento térmico (*thermal drift*) de los amplificadores operacionales del ZMPT101B.
-2. **Determinación del Offset Estático en Reposo ($I_{offset}$ y $V_{offset}$):**
-   * Con la corriente del circuito primario en exactamente cero amperios (0.00 A), se iniciará una rutina rápida de muestreo continuo en el ESP32 (10,000 muestras consecutivas).
-   * El firmware registrará el valor medio aritmético entregado por los canales analógicos GPIO 32 y 33, fijando los coeficientes matemáticos de $I_{offset}$ y $V_{offset}$ para el proceso discreto posterior, cancelando cualquier desviación en vacío del convertidor del microcontrolador.
-3. **Calibración Empírica de Factores de Escala ($V_{CAL}$ e $I_{CAL}$):**
-   * Se conectará una carga puramente resistiva estable de media potencia (ej. resistencia calefactora lineal de 1,200 W a 127 V, que demanda aprox. 9.45 A).
-   * Se registrarán simultáneamente las lecturas estables TRMS de voltaje y corriente en el multímetro Fluke 87V y los valores de tensión crudos computados por el ESP32.
-   * Se calcularán y almacenarán en la memoria no volátil (EEPROM/Flash) del ESP32 las constantes resultantes $V_{CAL}$ e $I_{CAL}$ empleando las ecuaciones descritas en la sección 8.5.1.
-4. **Calibración Dinámica del Desfase Angular ($Phase_{CAL}$):**
-   * Manteniendo conectada la carga resistiva pura (con factor de potencia real de 1.00 $\pm 0.00$ verificado en el Fluke 87V), se observará el cálculo de factor de potencia arrojado por el firmware.
-   * Se ajustará de forma incremental y decreciente el factor $Phase_{CAL}$ en el firmware mediante la consola serial hasta lograr que el Factor de Potencia calculado sea de **1.00 $\pm 0.01$** de forma sostenida durante 1 minuto, corrigiendo con exactitud el retraso magnético diferencial de los transductores.
-5. **Rutina de Recolección de Datos de la Muestra Experimental:**
-   * Se utilizará un autotransformador variable (Variac) y un banco de cargas mixtas (resistores de potencia y reactancias inductivas variables) para inyectar de forma secuencial y estable los 9 niveles de corriente bajo estudio: 0.5 A, 1 A, 2 A, 5 A, 10 A, 15 A, 20 A, 25 A y 30 A.
-   * En cada uno de los 9 niveles, una vez estabilizada la magnitud de la carga, se registrarán de forma automatizada **30 observaciones concurrentes** con un intervalo de separación temporal de 10 segundos entre sí.
-   * Para cada una de las 270 observaciones totales de la muestra, el firmware del ESP32 empaquetará los resultados procesados en una estructura de cadena de caracteres y la grabará en un archivo con formato `.CSV` en la tarjeta microSD mediante comunicación SPI, almacenando de forma paralela: estampa de tiempo cronológica, $V_{RMS}$ (Prototipo), $I_{RMS}$ (Prototipo), $P$ (Prototipo), $S$ (Prototipo), y $FP$ (Prototipo). El investigador registrará manualmente el valor de referencia patrón entregado simultáneamente por el Fluke 87V.
+1. **Estabilización Térmica:**
+   * Conectar el prototipo SME-IoT y el multímetro Fluke en la mesa de trabajo en condiciones normales de laboratorio.
+   * Dejar encendidos ambos equipos en reposo durante **15 minutos** sin conectar ninguna carga. Este paso es fundamental para estabilizar los componentes del circuito y evitar que el calentamiento inicial de las piezas afecte la precisión de las lecturas.
+2. **Registro de Punto Cero o Sin Carga ($I_{offset}$ y $V_{offset}$):**
+   * Con la corriente del circuito principal en cero amperios (0.00 A), el microcontrolador tomará un promedio rápido de 10,000 muestras seguidas.
+   * El programa registrará los voltajes promedio entregados por los sensores en reposo (que deben estar muy cerca de 1.65 V) y los fijará como los valores de referencia central.
+3. **Calibración de Escala ($V_{CAL}$ e $I_{CAL}$):**
+   * Conectar un calentador o plancha eléctrica estable de aproximadamente 1,200 W (que demanda unos 9.45 A).
+   * Registrar los valores estables de voltaje y corriente en el multímetro de referencia y ajustar las constantes en el programa del ESP32 hasta que las lecturas en pantalla coincidan con las del multímetro.
+4. **Calibración de Desfase de Fase ($Phase_{CAL}$):**
+   * Manteniendo conectada la misma plancha o resistencia, observar el factor de potencia que indica el prototipo.
+   * Ajustar por consola el parámetro de desfase en el programa del microcontrolador hasta que la pantalla indique un factor de potencia estable de **1.00 $\pm 0.01$**.
+5. **Rutina de Recolección de Datos:**
+   * Utilizar cargas variables para ajustar de forma estable los 9 niveles de corriente estudiados (desde 0.5 A hasta 30 A).
+   * En cada nivel de corriente, esperar a que la lectura se estabilice y registrar automáticamente **30 mediciones** seguidas (con 10 segundos de separación entre cada una).
+   * El firmware guardará cada muestra en formato `.CSV` en la tarjeta microSD, registrando la hora, voltios, amperios, watts y factor de potencia, mientras se anota de manera manual la lectura real del multímetro Fluke 87V para la posterior comparación en Excel.
 
 ### 8.6 Encuesta y Prueba Piloto Técnica
-Se realizará una consulta técnica preliminar a 10 usuarios de tarifa doméstica en Tenango del Valle para identificar el umbral de inversión aceptable, estimándolo en un rango de \$500 a \$700 MXN.
+Se realizará una encuesta preliminar a 10 viviendas en Tenango del Valle para conocer su opinión sobre el costo de la luz y validar que el presupuesto propuesto (menor a \$600.00 MXN) sea aceptable para los usuarios.
 
-De forma complementaria y crucial, se ejecutará una **prueba piloto técnica acotada en campo** utilizando únicamente 2 a 3 niveles de carga.
+De manera adicional, se ejecutará una **prueba piloto rápida** utilizando solo 2 o 3 niveles de carga eléctrica.
 
-El propósito de este piloto es validar que el sistema logre la estabilización térmica adecuada (≥ 5 min sin saturar el ADC), revisar la coherencia de reconexión del protocolo MQTT en caso de cortes WiFi, y certificar la integridad de los datos vaciados en la SD, previo a dar inicio a la recolección experimental exhaustiva estipulada a futuro.
+Esta prueba previa servirá para comprobar que los sensores no se calienten de más, verificar que la tarjeta microSD guarde el archivo `.CSV` de forma correcta y comprobar que la conexión WiFi con el protocolo MQTT se restablezca sola en caso de fallas, asegurando que todo funcione bien antes de realizar la prueba completa.
+
 
 ## 9 Cronograma
 
@@ -375,18 +354,18 @@ Se aplicará a una muestra piloto de 10 usuarios residenciales.
 
 ### Anexo C: Diagrama esquemático preliminar del circuito de acondicionamiento de señal
 
-Debido a que las señales eléctricas de la red domiciliaria oscilan en valores alternos (AC) que incluyen semiciclos de voltaje negativo, y el convertidor analógico-digital (ADC) del microcontrolador ESP32 únicamente admite valores unipolares positivos (0 a 3.3 V DC), es mandatario diseñar una etapa de acondicionamiento analógico previa. El siguiente esquema lógico fundamenta la construcción física del prototipo:
+Debido a que las señales eléctricas de la red domiciliaria oscilan en valores alternos (AC) que incluyen voltajes negativos, y el convertidor analógico-digital (ADC) del microcontrolador ESP32 únicamente admite valores positivos de voltaje (0 a 3.3 V DC), es necesario diseñar un circuito de acondicionamiento previo. El siguiente esquema describe el funcionamiento y la construcción física del prototipo:
 
 1. **Acondicionamiento de Corriente (Sensor SCT-013-030):**
-   * El sensor de núcleo partido se ancla magnéticamente al conductor de fase. Su salida natural es una señal alterna proporcional (0 a 1 V AC).
-   * Se implementa un divisor de tensión resistivo (constituido por dos resistores de precisión de $10\text{ k}\Omega$ en serie puenteando el pin de 3.3 V y GND del ESP32).
-   * El punto medio de este divisor inyecta un nivel DC o *offset* de exactamente **1.65 V** a la señal del sensor.
-   * Se añade un capacitor electrolítico de desacoplo de $10\,\mu\text{F}$ en paralelo al resistor conectado a tierra, estabilizando la referencia de voltaje y mitigando el ruido térmico de la fuente.
-   * La onda de corriente ahora se desplaza en el plano cartesiano (oscilando de forma segura entre **$\approx 0.236$ V y $3.064$ V** en máxima carga de 30 A, correspondiente al valor pico de $1.414$ V de una salida de $1$ V RMS) ingresando directamente al pin analógico **GPIO 32 (ADC1)**.
+   * El sensor tipo pinza se abraza magnéticamente al cable de fase de la casa, entregando una señal alterna proporcional a la corriente medida (de 0 a 1 V AC).
+   * Se construye un divisor de voltaje con dos resistencias de precisión de $10\text{ k}\Omega$ conectadas en serie entre los pines de 3.3 V y GND del ESP32.
+   * El punto medio de este circuito añade un voltaje central estable de **1.65 V** a la señal del sensor.
+   * Se agrega un condensador de $10\,\mu\text{F}$ en paralelo para estabilizar la señal de referencia de voltaje y filtrar el ruido eléctrico del circuito.
+   * La onda de corriente se desplaza así a la zona positiva del microcontrolador, oscilando de forma segura entre **$\approx 0.236$ V y $3.064$ V** al medir la carga máxima de 30 A (lo que equivale a un pico de $1.414$ V sobre la señal del sensor), ingresando de forma segura por el pin analógico **GPIO 32 (ADC1)**.
 2. **Acondicionamiento de Voltaje (Módulo ZMPT101B):**
-   * El transformador de aislamiento galvánico miniatura reduce y muestrea la red de 127 V AC.
-   * Para asegurar la total compatibilidad con el rango analógico de 3.3 V del ESP32 sin requerir circuitos de atenuación complejos externos, la placa integradora del módulo ZMPT101B se alimenta directamente a **3.3 V DC** (en lugar de 5 V DC). De esta manera, su offset analógico interno proporcionado por el OP-AMP (LM358) se autocentra automáticamente en el punto medio seguro de **1.65 V DC** (VCC/2) y su amplitud de salida se calibra mediante su potenciómetro multivuelta integrado.
-   * La señal desplazada y calibrada oscila de manera segura en el rango de 0 V a 3.3 V y se conecta al pin analógico **GPIO 33 (ADC1)**.
+   * El transformador del sensor reduce la tensión de la casa (127 V AC) de forma segura y aislada eléctricamente.
+   * Para asegurar que sea compatible con el microcontrolador sin añadir circuitos complejos, la placa del sensor se alimenta directamente a **3.3 V DC** (en lugar de los 5 V DC habituales). De este modo, el circuito del sensor ajusta de forma automática la onda a un voltaje central de **1.65 V DC** (la mitad del voltaje de alimentación), y su amplitud de señal se ajusta de forma manual con el potenciómetro de la placa.
+   * La señal de voltaje ya desplazada oscila de manera segura en el rango de 0 V a 3.3 V y se conecta al pin analógico **GPIO 33 (ADC1)**.
 3. **Módulo de Alimentación Aislada (SMPS):**
-   * Se incorpora el bloque conversor Hi-Link HLK-PM01 conectado de forma paralela a los 127 V AC.
-   * Entrega 5 V DC aislados magnéticamente en su salida, alimentando el pin `VIN` del ESP32, el cual cuenta con un regulador de tensión interno que distribuye 3.3 V DC estables al microcontrolador y al módulo sensor ZMPT101B, consolidando la total autonomía y seguridad operativa del instrumento.
+   * Se añade una fuente de alimentación compacta Hi-Link HLK-PM01 conectada en paralelo a la red eléctrica residencial de 127 V AC.
+   * Esta fuente entrega 5 V DC estables y aislados en su salida para alimentar el pin `VIN` del ESP32. El regulador de voltaje interno del microcontrolador se encarga de reducir y estabilizar este voltaje a 3.3 V DC para alimentar el resto de las piezas del prototipo, permitiendo que el dispositivo sea autónomo y funcione de manera segura.
